@@ -21,7 +21,7 @@
 }
 
 .relaxngui_table { }
-.relaxngui_hidden { display: none; }
+.relaxngui_hidden { display: none !important; }
 .relaxngui_table .relaxngui_table { }
 
 .relaxngui_table.closed > .relaxngui_table,
