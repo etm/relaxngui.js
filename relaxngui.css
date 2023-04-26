@@ -15,6 +15,8 @@
   <http://www.gnu.org/licenses/>.
 */
 
+@charset "UTF-8";
+
 /* if first thing is a header */
 .relaxngui_table[data-relaxngui-level="0"] .relaxngui_table[data-relaxngui-level="1"]:first-child .relaxngui_header[data-relaxngui-level="1"]:first-child {
   padding-top: 0;
@@ -34,7 +36,7 @@
   cursor: pointer;
 }
 .relaxngui_table.closed .relaxngui_fold:after {
-  content: "▶";
+  content: "\25B6"; /* ▶ */
   font-weight: bold;
   vertical-align:top;
   margin-right: 0.5em;
@@ -42,7 +44,7 @@
   top: -0.13em;
 }
 .relaxngui_table .relaxngui_fold:after {
-  content: "▽";
+  content: "\25BD"; /* ▽ */
   font-weight: bold;
   vertical-align:top;
   margin-right: 0.5em;
@@ -135,7 +137,7 @@
   padding-left: 0.2em;
 }
 .relaxngui_hint::before {
- 	content: "↳ ";
+  content: "\21B3 "; /* ↳ */
 }
 .relaxngui_header {
   margin: 0;
