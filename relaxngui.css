@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
   This file is part of RelaxNGui.
 
@@ -14,8 +15,6 @@
   RelaxNGui (file COPYING in the main directory).  If not, see
   <http://www.gnu.org/licenses/>.
 */
-
-@charset "UTF-8";
 
 /* if first thing is a header */
 .relaxngui_table[data-relaxngui-level="0"] .relaxngui_table[data-relaxngui-level="1"]:first-child .relaxngui_header[data-relaxngui-level="1"]:first-child {
