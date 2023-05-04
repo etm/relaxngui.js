@@ -35,7 +35,7 @@
   cursor: pointer;
 }
 .relaxngui_table.closed .relaxngui_fold:after {
-  content: "\25B6"; /* ▶ */
+  content: "▶";
   font-weight: bold;
   vertical-align:top;
   margin-right: 0.5em;
@@ -43,7 +43,7 @@
   top: -0.13em;
 }
 .relaxngui_table .relaxngui_fold:after {
-  content: "\25BD"; /* ▽ */
+  content: "▽";
   font-weight: bold;
   vertical-align:top;
   margin-right: 0.5em;
@@ -136,7 +136,7 @@
   padding-left: 0.2em;
 }
 .relaxngui_hint::before {
-  content: "\21B3 "; /* ↳ */
+ 	content: "↳ ";
 }
 .relaxngui_header {
   margin: 0;
