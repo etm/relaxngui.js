@@ -549,7 +549,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   target.on('input','input[pattern]',function(ev){
     let input = $(this);
     let pattern = new RegExp(input.attr('pattern'));
-    if (!pattern.test(input.val())) {
+    if (!(input.val() == '') && !pattern.test(input.val())) {
       input.val(lastval);
     }
   });
