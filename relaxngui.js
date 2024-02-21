@@ -203,7 +203,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       node.addClass('relaxngui_hidden');
     } else if (label) {
       if (labeltype == 'xml') {
-        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_-]*$' id='' placeholder='" + label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' id='' placeholder='" + label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       } else {
         node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$' id='' placeholder='" + label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       }
