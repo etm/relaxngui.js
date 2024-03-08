@@ -44,7 +44,7 @@
                 var rngui = new RelaxNGui(rng,$('#show'));
                 rngui.content(data);
                 $('#saveall').on('click',function(){
-                  console.log($(rngui.save()).serializePrettyXML());
+                  console.log(rngui.save_text());
                 });
               }
             });

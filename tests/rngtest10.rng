@@ -11,6 +11,18 @@
   <element name="priority" rngui:label="Priority" rngui:default="1">
     <data type="positiveInteger" rngui:label="a number between zero and n"/>
   </element>
+  <element name="handling" rngui:label="Handling" rngui:functional="false" rngui:onchange="relaxngui_toggle('collect','deadline')">
+    <choice>
+      <value id="single">Single Worker</value>
+      <value id="collect">Collect from Multiple Workers</value>
+    </choice>
+  </element>
+  <element name="collect" rngui:label="Minimum Results" rngui:visible="false">
+    <data type="positiveInteger" rngui:label="a number between zero and n"/>
+  </element>
+  <element name="deadline" rngui:label="Deadline" rngui:visible="false">
+    <data type="date" rngui:label="deadline"/>
+  </element>
   <element name="restrictions" rngui:header="Subject Restrictions">
     <zeroOrMore rngui:label="New Restriction">
       <element name="restriction">

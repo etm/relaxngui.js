@@ -326,12 +326,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   }; //}}}
 
   this.sanitize_xmlns = function(xml) { //{{{
-    $('[xmlns]',xml).each((idx,ele) => {
-      if (ele.parentNode.namespaceURI == ele.getAttribute('xmlns') || ele.getAttribute('xmlns') == 'null') {
-        ele.removeAttribute('xmlns');
-      }
-    });
-    return xml;
+    let tmp = $(xml).serializePrettyXML();
+    tmp = tmp.replaceAll(/ xmlns="null"/g,'');
+    return $X(tmp);
   }; //}}}
   this.save_raw = function() { //{{{
     var xml;
@@ -394,7 +391,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return (self.sanitize_xmlns(self.save_raw()));
   } //}}}
   this.save_text = function() { //{{{
-    return $(self.save()).serializeXML();
+    return $(self.save()).serializePrettyXML();
   } //}}}
 
   this.content = function(data) { //{{{
