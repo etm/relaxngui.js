@@ -155,19 +155,19 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
   var recshow_single = function(tag,ret,template,path,lencount,optional){ //{{{
     var node = $('<div class="relaxngui_row"/>');
-    var first = {};
+    var first = { name: '', label: '', labeltype: '', default: '', visible: true, functional: true, onchange: '', hint: '' };
     var second = {};
     var datalist = [];
     var retcount = 0;
     $.each(tag.attributes,function(k,v){
+      if  (v.localName == 'name')                                                  { first.name       = v.nodeValue.replace(/:/,'\\:'); }
       if ((v.localName == 'label')      && (v.namespaceURI == 'http://rngui.org')) { first.label      = v.nodeValue; }
       if ((v.localName == 'labeltype')  && (v.namespaceURI == 'http://rngui.org')) { first.labeltype  = v.nodeValue; }
       if ((v.localName == 'default')    && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
-      if ((v.localName == 'visible')    && (v.namespaceURI == 'http://rngui.org')) { first.visible    = v.nodeValue == 'true' ? true : false; }
-      if ((v.localName == 'functional') && (v.namespaceURI == 'http://rngui.org')) { first.functional = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'visible')    && (v.namespaceURI == 'http://rngui.org')) { first.visible    = v.nodeValue == 'false' ? false : true; }
+      if ((v.localName == 'functional') && (v.namespaceURI == 'http://rngui.org')) { first.functional = v.nodeValue == 'false' ? false : true; }
       if ((v.localName == 'onchange')   && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
       if ((v.localName == 'hint')       && (v.namespaceURI == 'http://rngui.org')) { first.hint       = v.nodeValue; }
-      if  (v.localName == 'name')                                                  { first.name       = v.nodeValue.replace(/:/,'\\:'); }
     });
 
     $.each($(tag).children('data[type=string]'), function(k,v) { second = labextract('string',v); });
@@ -194,6 +194,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       second = labextract('datalist',$(v).parent()[0]);
       datalist.push([v.textContent,$(v).attr('id') ? $(v).attr('id') : v.textContent]);
     });
+
+    if (first.visible && first.functional) {
+      ret.attr('data-relaxngui-export','normal');
+    } else if (first.visible && !first.functional) {
+      ret.attr('data-relaxngui-export','suppress');
+    } else {
+      ret.attr('data-relaxngui-export','no');
+    }
+
     if (first.name && first.label) {
       node.append($("<label class='relaxngui_cell" + (optional && first.default == '' ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for=''>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
     } else if (first.name) {
@@ -323,22 +332,18 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return ret.children().length > 0 ? ret.children() : undefined;
   }; //}}}
 
-  this.sanitize_xmlns = function(xml) { //{{{
-    let tmp = $(xml).serializePrettyXML();
-    tmp = tmp.replaceAll(/ xmlns="null"/g,'');
-    return $X(tmp);
-  }; //}}}
   this.save_raw = function() { //{{{
     var xml;
     var curr;
-    var tar = target.find('[data-relaxngui-path]:not([data-relaxngui-template=true])');
+    var tar = target.find('[data-relaxngui-path]:not([data-relaxngui-template=true]):not([data-relaxngui-export=no])');
     for (var i = 0; i<tar.length;) {
       var path = $(tar[i]).attr('data-relaxngui-path');
       var parent_path = $(tar[i]).attr('data-relaxngui-parent');
       var parent_ns = $(tar[i]).attr('data-relaxngui-ns');
       if (i == 0) {
         var par = path.replace(/\[data-main\]/,'').replace(/ > /,'');
-        if (typeof parent_ns !== 'undefined' && parent_ns != '') {
+        if (typeof parent_ns !== 'undefined' && parent_ns != undefined && parent_ns != null && parent_ns != '') {
+          console.log('rrrr');
           xml = $XR('<' + par + ' xmlns="' + parent_ns + '"/>');
         } else {
           xml = $XR('<' + par + '/>');
@@ -352,7 +357,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           var par = ma.replace(/\[data-main\]/,'');
           var pp = $(parent_path,xml);
           parent_ns = pp[0].namespaceURI;
-          if (typeof parent_ns !== 'undefined' && parent_ns != '') {
+          if (typeof parent_ns !== 'undefined' && parent_ns != undefined && parent_ns != null && parent_ns != '') {
             var curr = $($XR('<' + par + ' xmlns="' + parent_ns + '"/>').documentElement);
           } else {
             var curr = $($XR('<' + par + '/>').documentElement);
@@ -362,7 +367,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           if ($(tar[i]).get_val()) {
             var pp = $(parent_path,xml);
             parent_ns = pp[0].namespaceURI;
-            if (typeof parent_ns !== 'undefined' && parent_ns != '') {
+            if (typeof parent_ns !== 'undefined' && parent_ns != undefined && parent_ns != null && parent_ns != '') {
               var nn =  $($XR('<' + $(tar[i]).get_val() + ' xmlns="' + parent_ns + '"/>').documentElement).text($(tar[i+1]).get_val());
             } else {
               var nn =  $($XR('<' + $(tar[i]).get_val() + '/>').documentElement).text($(tar[i+1]).get_val());
@@ -386,7 +391,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return xml;
   }; //}}}
   this.save = function() { //{{{
-    return (self.sanitize_xmlns(self.save_raw()));
+    return self.save_raw();
   } //}}}
   this.save_text = function() { //{{{
     return $(self.save()).serializePrettyXML();
