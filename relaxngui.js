@@ -30,9 +30,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   var labextract = function(type,tag) { //{{{
     var ret = { 'type': type, 'wrap': false, 'readonly': false, 'label': '', default: '' };
     $.each(tag.attributes,function(k,v){
-      if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) { ret['label'] = v.nodeValue; }
+      if ((v.localName == 'label')    && (v.namespaceURI == 'http://rngui.org')) { ret['label']    = v.nodeValue; }
       if ((v.localName == 'readonly') && (v.namespaceURI == 'http://rngui.org')) { ret['readonly'] = v.nodeValue == 'true' ? true : false; }
-      if ((v.localName == 'wrap') && (v.namespaceURI == 'http://rngui.org')) { ret['wrap'] = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'wrap')     && (v.namespaceURI == 'http://rngui.org')) { ret['wrap']     = v.nodeValue == 'true' ? true : false; }
     });
     $.each(tag.children,function(k,v){
       if ((v.localName == 'param') && (v.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
@@ -155,21 +155,19 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
   var recshow_single = function(tag,ret,template,path,lencount,optional){ //{{{
     var node = $('<div class="relaxngui_row"/>');
-    var name;
-    var label;
-    var labeltype;
+    var first = {};
     var second = {};
     var datalist = [];
-    var defaul = '';
-    var hint = '';
     var retcount = 0;
     $.each(tag.attributes,function(k,v){
-      if ((v.localName == 'label')     && (v.namespaceURI == 'http://rngui.org')) { label  = v.nodeValue; }
-      if ((v.localName == 'date')      && (v.namespaceURI == 'http://rngui.org')) { label  = v.nodeValue; }
-      if ((v.localName == 'labeltype') && (v.namespaceURI == 'http://rngui.org')) { labeltype  = v.nodeValue; }
-      if ((v.localName == 'default')   && (v.namespaceURI == 'http://rngui.org')) { defaul = v.nodeValue; }
-      if ((v.localName == 'hint')      && (v.namespaceURI == 'http://rngui.org')) { hint   = v.nodeValue; }
-      if  (v.localName == 'name')                                                 { name   = v.nodeValue.replace(/:/,'\\:'); }
+      if ((v.localName == 'label')      && (v.namespaceURI == 'http://rngui.org')) { first.label      = v.nodeValue; }
+      if ((v.localName == 'labeltype')  && (v.namespaceURI == 'http://rngui.org')) { first.labeltype  = v.nodeValue; }
+      if ((v.localName == 'default')    && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
+      if ((v.localName == 'visible')    && (v.namespaceURI == 'http://rngui.org')) { first.visible    = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'functional') && (v.namespaceURI == 'http://rngui.org')) { first.functional = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'onchange')   && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
+      if ((v.localName == 'hint')       && (v.namespaceURI == 'http://rngui.org')) { first.hint       = v.nodeValue; }
+      if  (v.localName == 'name')                                                  { first.name       = v.nodeValue.replace(/:/,'\\:'); }
     });
 
     $.each($(tag).children('data[type=string]'), function(k,v) { second = labextract('string',v); });
@@ -196,22 +194,22 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       second = labextract('datalist',$(v).parent()[0]);
       datalist.push([v.textContent,$(v).attr('id') ? $(v).attr('id') : v.textContent]);
     });
-    if (name && label) {
-      node.append($("<label class='relaxngui_cell" + (optional && defaul == '' ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for=''>" + label + "</label><span class='relaxngui_cell'>⇒</span>"));
-    } else if (name) {
+    if (first.name && first.label) {
+      node.append($("<label class='relaxngui_cell" + (optional && first.default == '' ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for=''>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
+    } else if (first.name) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
-    } else if (label) {
-      if (labeltype == 'xml') {
-        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' id='' placeholder='" + label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+    } else if (first.label) {
+      if (first.labeltype == 'xml') {
+        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       } else {
-        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$' id='' placeholder='" + label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       }
     }
 
-    var tpath = ((typeof name === 'undefined') ? path + ' > *' : (tag.localName == 'element' ? path + ' > ' + name : path + '[' + name + ']'));
-    if (label) {
-      recshow_data(node,defaul,tpath,datalist,second,template,path,optional);
+    var tpath = ((typeof first.name === 'undefined') ? path + ' > *' : (tag.localName == 'element' ? path + ' > ' + first.name : path + '[' + first.name + ']'));
+    if (first.label) {
+      recshow_data(node,first.default,tpath,datalist,second,template,path,optional);
       ret.append(node);
       retcount += 1;
     } else {
@@ -223,11 +221,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         retcount += 1;
       }
     }
-    if (hint) {
+    if (first.hint) {
       var n  = $('<div class="relaxngui_hint"/>');
       var s1 = $('<em>Hint: </em>');
       var s2 = $('<span/>');
-          s2.text(hint);
+          s2.text(first.hint);
 
       n.append(s1);
       n.append(s2);
