@@ -1,0 +1,37 @@
+<element rngui:version="1.2" rngui:header="Arguments" name="arguments" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name="orgmodel" rngui:label="Organisation Model">
+    <data type="string" rngui:label="Link to an XML Org-Model"/>
+  </element>
+  <element name="form" rngui:label="Form Link">
+    <data type="string" rngui:label="Link to an HTML Form"/>
+  </element>
+  <element name="role" rngui:label="Role">
+    <data type="string" rngui:label="e.g. Assistant"/>
+  </element>
+  <element name="priority" rngui:label="Priority" rngui:default="1">
+    <data type="positiveInteger" rngui:label="a number between zero and n"/>
+  </element>
+  <element name="restrictions" rngui:header="Subject Restrictions">
+    <zeroOrMore rngui:label="New Restriction">
+      <element name="restriction">
+        <element name="mode" rngui:label="Restriction">
+          <choice>
+            <value>force</value>
+            <value>prohibit</value>
+          </choice>
+        </element>
+        <element name="id" rngui:label='Subject ID'>
+          <data type="string" rngui:label="e.g., Username"/>
+        </element>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="data" rngui:header="Data Elements">
+    <zeroOrMore rngui:label="New Data Element">
+      <element rngui:label='Name'>
+        <anyName/>
+        <data type="string" rngui:label="Value"/>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>
