@@ -130,33 +130,33 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return fold;
   } //}}}
 
-  var recshow_data = function(node,defaul,tpath,datalist,second,template,path,optional) { //{{{
+  var recshow_data = function(node,defaul,tpath,datalist,second,template,path,optional,id) { //{{{
     if (defaul && typeof defaul == 'string' && defaul.match(/^javascript:/)) {
       defaul = defaul.replace(/^javascript:/,'');
       defaul = ceval ? ceval(defaul) : eval(defaul);
     }
     var os = (optional ? " onkeyup='var sl = $(this).siblings(\"label\"); if ($(this).get_val() == \"\") { if (!sl.hasClass(\"optional\")) { sl.addClass(\"optional\") } } else { sl.removeClass(\"optional\") }' data-optional='true'" : " data-optional='false'");
     if (second.readonly)
-      node.append($("<input      data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='' readonly='readonly'" + os + "></input>"));
+      node.append($("<input      data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='" + id + "' readonly='readonly'" + os + "></input>"));
     else {
       if (second.type == 'string') {
-        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='' placeholder='" + second.label + "'"  + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
       } else if (second.type == 'integer') {
-        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+)|(^!.*)'                                       title='integer number'              id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+)|(^!.*)'                                       title='integer number'              id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'positiveInteger') {
         if (second.min == undefined) second.min = 1;
-        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[1-9]+[0-9]*)|(^!.*)'                                    title='positive integer number'     id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[1-9]+[0-9]*)|(^!.*)'                                    title='positive integer number'     id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'nonNegativeInteger') {
         if (second.min == undefined) second.min = 0;
-        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[0-9]+)|(^!.*)'                                          title='non-negative integer number' id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[0-9]+)|(^!.*)'                                          title='non-negative integer number' id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'date') {
-        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01]))|(^!.*)' title='date'                        id='' placeholder='" + second.label + "'" + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01]))|(^!.*)' title='date'                        id='" + id + "' placeholder='" + second.label + "'" + os + "></input>"));
       } else if (second.type == 'float') {
-        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='decimal number'              id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='decimal number'              id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'text') {
-        node.append($("<div      data-relaxngui-visible='true' contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                  id='' placeholder='" + second.label + "'" + os + "></div>"));
+        node.append($("<div      data-relaxngui-visible='true' contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                                                              id='" + id + "' placeholder='" + second.label + "'" + os + "></div>"));
       } else if (second.type == 'datalist') {
-        var tnode = $("<select   data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                                                              id='' size='1'" + os + "></select>");
+        var tnode = $("<select   data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + "                                                                  data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                                                              id='" + id + "' size='1'" + os + "></select>");
         $.each(datalist,function(didx,dname){
           if (dname[1] == defaul)
             tnode.append('<option value="' + dname[1] + '" selected="selected">' + dname[0] + '</value>');
@@ -165,7 +165,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         });
         node.append(tnode);
       } else {
-        node.append($("<input    data-relaxngui-visible='true' value='' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'              id='' readonly='readonly'" + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' value=''                                                                                                                                        data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                 id='" + id + "' readonly='readonly'" + os + "></input>"));
       }
     }
   }; //}}}
@@ -220,22 +220,24 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       ret.attr('data-relaxngui-onchange',first.onchange);
     }
 
+    let labid = Math.random().toString(36).slice(2);
+
     if (first.name && first.label) {
-      node.append($("<label class='relaxngui_cell" + (optional && first.default == '' && first.visible ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for=''>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
+      node.append($("<label class='relaxngui_cell" + (optional && first.default == '' && first.visible ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
     } else if (first.name) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
     } else if (first.label) {
       if (first.labeltype == 'xml') {
-        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       } else {
-        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$'       placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       }
     }
 
     var tpath = ((typeof first.name === 'undefined') ? path + ' > *' : (tag.localName == 'element' ? path + ' > ' + first.name : path + '[' + first.name + ']'));
     if (first.label) {
-      recshow_data(node,first.default,tpath,datalist,second,template,path,optional);
+      recshow_data(node,first.default,tpath,datalist,second,template,path,optional,labid);
       ret.append(node);
       retcount += 1;
     } else {
