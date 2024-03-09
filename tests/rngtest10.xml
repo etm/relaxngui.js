@@ -1,1 +1,11 @@
-<arguments/>
+<arguments>
+  <orgmodel/>
+  <form/>
+  <role/>
+  <priority></priority>
+  <handling rngui-nonfunctional="">single</handling>
+  <collect></collect>
+  <deadline/>
+  <restrictions/>
+  <data/>
+</arguments>

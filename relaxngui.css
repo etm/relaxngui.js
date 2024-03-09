@@ -225,3 +225,7 @@ input.relaxngui_cell:nth-child(3):invalid {
 .relaxngui_template {
   display: none;
 }
+
+[data-relaxngui-visible=false] {
+  display: none;
+}

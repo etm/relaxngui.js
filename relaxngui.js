@@ -20,9 +20,26 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     rng = $XR($(rng).serializeXML());
   } //}}}
 
+  var rec_lenextract = function(elements) { //{{{
+    var lencount = 0;
+    $.each(elements,function(k,v){
+      var tag = $(v)[0];
+      if ((tag.localName == 'element') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
+        $(tag).children('attribute').each(function(l,w){
+          lencount = lenextract($(w)[0],lencount);
+        });
+        lencount = lenextract(tag,lencount);
+      }
+      if ((tag.localName == 'optional') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
+        lencount = rec_lenextract(tag.children);
+      }
+    });
+    return lencount;
+  }; //}}}
   var lenextract = function(tag, lencount) { //{{{
     $.each(tag.attributes,function(k,v){
       if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) { lencount = v.nodeValue.length > lencount ? v.nodeValue.length : lencount; }
+      if ((v.localName == 'labellength') && (v.namespaceURI == 'http://rngui.org')) { lencount = parseInt(v.nodeValue); }
     });
     return lencount;
   }; //}}}
@@ -120,26 +137,26 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
     var os = (optional ? " onkeyup='var sl = $(this).siblings(\"label\"); if ($(this).get_val() == \"\") { if (!sl.hasClass(\"optional\")) { sl.addClass(\"optional\") } } else { sl.removeClass(\"optional\") }' data-optional='true'" : " data-optional='false'");
     if (second.readonly)
-      node.append($("<input      " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='' readonly='readonly'" + os + "></input>"));
+      node.append($("<input      data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='' readonly='readonly'" + os + "></input>"));
     else {
       if (second.type == 'string') {
-        node.append($("<input    " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='' placeholder='" + second.label + "'"  + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                                                                  id='' placeholder='" + second.label + "'"  + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
       } else if (second.type == 'integer') {
-        node.append($("<input    " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+)|(^!.*)'                                       title='integer number'              id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+)|(^!.*)'                                       title='integer number'              id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'positiveInteger') {
         if (second.min == undefined) second.min = 1;
-        node.append($("<input    " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[1-9]+[0-9]*)|(^!.*)'                                    title='positive integer number'     id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[1-9]+[0-9]*)|(^!.*)'                                    title='positive integer number'     id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'nonNegativeInteger') {
         if (second.min == undefined) second.min = 0;
-        node.append($("<input    " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[0-9]+)|(^!.*)'                                          title='non-negative integer number' id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+]?[0-9]+)|(^!.*)'                                          title='non-negative integer number' id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'date') {
-        node.append($("<input    " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01]))|(^!.*)' title='date'                        id='' placeholder='" + second.label + "'" + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01]))|(^!.*)' title='date'                        id='' placeholder='" + second.label + "'" + os + "></input>"));
       } else if (second.type == 'float') {
-        node.append($("<input    " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='decimal number'              id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='decimal number'              id='' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'text') {
-        node.append($("<div contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                  id='' placeholder='" + second.label + "'" + os + "></div>"));
+        node.append($("<div      data-relaxngui-visible='true' contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                  id='' placeholder='" + second.label + "'" + os + "></div>"));
       } else if (second.type == 'datalist') {
-        var tnode = $("<select   " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                                                              id='' size='1'" + os + "></select>");
+        var tnode = $("<select   data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                                                              id='' size='1'" + os + "></select>");
         $.each(datalist,function(didx,dname){
           if (dname[1] == defaul)
             tnode.append('<option value="' + dname[1] + '" selected="selected">' + dname[0] + '</value>');
@@ -148,7 +165,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         });
         node.append(tnode);
       } else {
-        node.append($("<input     value='' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'              id='' readonly='readonly'" + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true' value='' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'              id='' readonly='readonly'" + os + "></input>"));
       }
     }
   }; //}}}
@@ -165,8 +182,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if ((v.localName == 'labeltype')  && (v.namespaceURI == 'http://rngui.org')) { first.labeltype  = v.nodeValue; }
       if ((v.localName == 'default')    && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
       if ((v.localName == 'visible')    && (v.namespaceURI == 'http://rngui.org')) { first.visible    = v.nodeValue == 'false' ? false : true; }
-      if ((v.localName == 'functional') && (v.namespaceURI == 'http://rngui.org')) { first.functional = v.nodeValue == 'false' ? false : true; }
-      if ((v.localName == 'onchange')   && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
+      if ((v.localName == 'onchange')   && (v.namespaceURI == 'http://rngui.org')) { first.onchange   = v.nodeValue; }
       if ((v.localName == 'hint')       && (v.namespaceURI == 'http://rngui.org')) { first.hint       = v.nodeValue; }
     });
 
@@ -177,6 +193,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $.each($(tag).children('data[type=float]'), function(k,v) { second = labextract('float',v); });
     $.each($(tag).children('data[type=date]'), function(k,v) { second = labextract('date',v); });
     $.each($(tag).children('text'), function(k,v) { second = labextract('text',v); });
+    $.each($(tag).children('attribute[name=rngui-nonfunctional]'), function(k,v) { first.functional = false });
     $.each($(tag).children('choice[href][extract]'), function(k,v) {
       second = labextract('datalist',v);
       $.ajax({
@@ -192,27 +209,25 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     });
     $.each($(tag).find('choice > value'), function(k,v) {
       second = labextract('datalist',$(v).parent()[0]);
-      datalist.push([v.textContent,$(v).attr('id') ? $(v).attr('id') : v.textContent]);
+      datalist.push([v.hasAttributeNS('http://rngui.org','label') ? v.getAttributeNS('http://rngui.org','label') : v.textContent,v.textContent]);
     });
 
-    if (first.visible && first.functional) {
-      ret.attr('data-relaxngui-export','normal');
-    } else if (first.visible && !first.functional) {
-      ret.attr('data-relaxngui-export','suppress');
-    } else {
-      ret.attr('data-relaxngui-export','no');
+    ret.attr('data-relaxngui-visible',first.visible);
+    ret.attr('data-relaxngui-functional',first.functional);
+    if (first.onchange != '') {
+      ret.attr('data-relaxngui-onchange',first.onchange);
     }
 
     if (first.name && first.label) {
-      node.append($("<label class='relaxngui_cell" + (optional && first.default == '' ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for=''>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
+      node.append($("<label class='relaxngui_cell" + (optional && first.default == '' && first.visible ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for=''>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
     } else if (first.name) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
     } else if (first.label) {
       if (first.labeltype == 'xml') {
-        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       } else {
-        node.append($("<input data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$' id='' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
       }
     }
 
@@ -261,16 +276,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
     var ret = $('<div/>');
 
-    var lencount = 0;
-    $.each(elements,function(k,v){
-      var tag = $(v)[0];
-      if ((tag.localName == 'element') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
-        $(tag).children('attribute').each(function(l,w){
-          lencount = lenextract($(w)[0],lencount);
-        });
-        lencount = lenextract(tag,lencount);
-      }
-    });
+    var lencount = rec_lenextract(elements);
     $.each(elements,function(k,v){
       if (attr.mode == 'even') { attr.mode = 'odd' }
       else { attr.mode = 'even'; }
@@ -300,7 +306,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
         recshow_header(tag,xxx,attr.level);
         var rcount = 0;
-        $(tag).children('attribute').each(function(l,w){
+        $(tag).children('attribute:not([name=rngui-nonfunctional])').each(function(l,w){
           var ttag = $(w)[0];
           rcount += recshow_single(ttag,xxx,template,path + ' > ' + $(tag).attr('name'),lencount,attr.optional ? true : false);
         });
@@ -335,7 +341,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   this.save_raw = function() { //{{{
     var xml;
     var curr;
-    var tar = target.find('[data-relaxngui-path]:not([data-relaxngui-template=true]):not([data-relaxngui-export=no])');
+    var tar = target.find('[data-relaxngui-path][data-relaxngui-visible=true]:not([data-relaxngui-template=true])');
     for (var i = 0; i<tar.length;) {
       var path = $(tar[i]).attr('data-relaxngui-path');
       var parent_path = $(tar[i]).attr('data-relaxngui-parent');
@@ -343,7 +349,6 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if (i == 0) {
         var par = path.replace(/\[data-main\]/,'').replace(/ > /,'');
         if (typeof parent_ns !== 'undefined' && parent_ns != undefined && parent_ns != null && parent_ns != '') {
-          console.log('rrrr');
           xml = $XR('<' + par + ' xmlns="' + parent_ns + '"/>');
         } else {
           xml = $XR('<' + par + '/>');
@@ -357,10 +362,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           var par = ma.replace(/\[data-main\]/,'');
           var pp = $(parent_path,xml);
           parent_ns = pp[0].namespaceURI;
+          let exp = '';
+          if ($(tar[i]).attr('data-relaxngui-functional') == 'false') {
+            exp = ' rngui-nonfunctional="true"';
+          }
+
           if (typeof parent_ns !== 'undefined' && parent_ns != undefined && parent_ns != null && parent_ns != '') {
-            var curr = $($XR('<' + par + ' xmlns="' + parent_ns + '"/>').documentElement);
+            var curr = $($XR('<' + par + ' xmlns="' + parent_ns + '"' + exp + '/>').documentElement);
           } else {
-            var curr = $($XR('<' + par + '/>').documentElement);
+            var curr = $($XR('<' + par + exp + '/>').documentElement);
           }
           pp.last().append(curr);
         } else if (ma.match(/\[data-name\]/)) {
@@ -552,5 +562,24 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     if (!(input.val() == '') && !pattern.test(input.val())) {
       input.val(lastval);
     }
+  });
+
+  this.relaxngui_toggle = function(...args) {
+    args.forEach((arg, i) => {
+      arg = ' ' + arg.trim() + '[data-main]';
+      let par = $('[data-relaxngui-path="' + arg + '"]',target);
+      let vis = par.attr('data-relaxngui-visible');
+      if (vis == 'true') {
+        par.attr('data-relaxngui-visible','false');
+      } else {
+        par.attr('data-relaxngui-visible','true');
+      }
+    });
+  };
+
+  target.on('change','input, textarea, select',function(ev){
+    let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
+    let par = $('[data-relaxngui-path="' + pp + '"]',target);
+    eval(par.attr('data-relaxngui-onchange'));
   });
 };
