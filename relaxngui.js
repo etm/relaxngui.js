@@ -194,18 +194,20 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $.each($(tag).children('data[type=date]'), function(k,v) { second = labextract('date',v); });
     $.each($(tag).children('text'), function(k,v) { second = labextract('text',v); });
     $.each($(tag).children('attribute[name=rngui-nonfunctional]'), function(k,v) { first.functional = false });
-    $.each($(tag).children('choice[href][extract]'), function(k,v) {
-      second = labextract('datalist',v);
-      $.ajax({
-        url: $(v).attr('href'),
-        async: false,
-        success: function(data) {
-          var res = eval($(v).attr('extract'));
-          $.each(res,function(i,n){
-            datalist.push(n);
-          });
-        }
-      });
+    $.each($(tag).children('choice'), function(k,v) {
+      if (v.hasAttributeNS('http://rngui.org','href') && v.hasAttributeNS('http://rngui.org','extract')) {
+        second = labextract('datalist',v);
+        $.ajax({
+          url: v.getAttributeNS('http://rngui.org','href'),
+          async: false,
+          success: function(data) {
+            var res = eval(v.getAttributeNS('http://rngui.org','extract'));
+            $.each(res,function(i,n){
+              datalist.push(n);
+            });
+          }
+        });
+      }
     });
     $.each($(tag).find('choice > value'), function(k,v) {
       second = labextract('datalist',$(v).parent()[0]);
