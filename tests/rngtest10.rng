@@ -22,6 +22,8 @@
     <element name="collect" rngui:label="Minimum Required Workers" rngui:visible="false">
       <data type="nonNegativeInteger" rngui:label="a number between 1 and n, zero means all workers in the role"/>
     </element>
+  </optional>
+  <optional>
     <element name="deadline" rngui:label="Deadline" rngui:visible="false">
       <data type="string" rngui:label="deadline, e.g. 3 days"/>
     </element>

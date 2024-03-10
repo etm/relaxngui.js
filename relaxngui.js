@@ -172,7 +172,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
   var recshow_single = function(tag,ret,template,path,lencount,optional){ //{{{
     var node = $('<div class="relaxngui_row"/>');
-    var first = { name: '', label: '', labeltype: '', default: '', visible: true, functional: true, onchange: '', hint: '' };
+    var first = { name: '', label: '', labeltype: '', default: '', visible: true, functional: true, onchange: '', oninit: '', hint: '' };
     var second = {};
     var datalist = [];
     var retcount = 0;
@@ -183,6 +183,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if ((v.localName == 'default')    && (v.namespaceURI == 'http://rngui.org')) { first.default    = v.nodeValue; }
       if ((v.localName == 'visible')    && (v.namespaceURI == 'http://rngui.org')) { first.visible    = v.nodeValue == 'false' ? false : true; }
       if ((v.localName == 'onchange')   && (v.namespaceURI == 'http://rngui.org')) { first.onchange   = v.nodeValue; }
+      if ((v.localName == 'oninit')     && (v.namespaceURI == 'http://rngui.org')) { first.oninit     = v.nodeValue; }
       if ((v.localName == 'hint')       && (v.namespaceURI == 'http://rngui.org')) { first.hint       = v.nodeValue; }
     });
 
@@ -218,6 +219,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     ret.attr('data-relaxngui-functional',first.functional);
     if (first.onchange != '') {
       ret.attr('data-relaxngui-onchange',first.onchange);
+    }
+    if (first.oninit != '') {
+      ret.attr('data-relaxngui-oninit',first.oninit);
     }
 
     let labid = Math.random().toString(36).slice(2);
@@ -494,6 +498,12 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           }
         });
       });
+
+      $('[data-relaxngui-oninit]',target).each((i,ele) => {
+        let ev = $(ele).attr('data-relaxngui-oninit');
+        relaxngui_init_target = $(ele).attr('data-relaxngui-path').replace(/\[data-main\]/,'');
+        eval(ev);
+      });
     }
   }; //}}}
 
@@ -568,6 +578,21 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
   });
 
+  var relaxngui_init_target;
+  this.relaxngui_visible = function(what,...args) {
+    let curval = $('[data-relaxngui-path="' + relaxngui_init_target + '"]',target).get_val();
+    console.log('[data-relaxngui-path="' + relaxngui_init_target + '"]');
+    console.log(what);
+    console.log(curval);
+    if (what == curval) {
+      args.forEach((arg, i) => {
+        arg = ' ' + arg.trim() + '[data-main]';
+        let par = $('[data-relaxngui-path="' + arg + '"]',target);
+        par.attr('data-relaxngui-visible','true');
+      });
+    }
+  }
+
   this.relaxngui_toggle = function(...args) {
     args.forEach((arg, i) => {
       arg = ' ' + arg.trim() + '[data-main]';
@@ -586,4 +611,5 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     let par = $('[data-relaxngui-path="' + pp + '"]',target);
     eval(par.attr('data-relaxngui-onchange'));
   });
+
 };
