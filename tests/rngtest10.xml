@@ -2,10 +2,10 @@
   <orgmodel/>
   <form/>
   <role/>
-  <priority></priority>
-  <handling rngui-nonfunctional="">single</handling>
-  <collect></collect>
-  <deadline/>
+  <priority>1</priority>
+  <handling rngui-nonfunctional="true">single</handling>
   <restrictions/>
-  <data/>
+  <data>
+    <asd>sdf</asd>
+  </data>
 </arguments>
