@@ -408,6 +408,13 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       }
       i+=1;
     }
+    $('*',xml).each((i,ele) => {
+      if (ele.parentNode) {
+        if (ele.parentNode.namespaceURI == ele.namespaceURI) {
+          ele.removeAttribute('xmlns');
+        }
+      }
+    });
     return xml;
   }; //}}}
   this.save = function() { //{{{
@@ -618,7 +625,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     if (par.is("[data-relaxngui-onchange]")) {
       eval(par.attr('data-relaxngui-onchange'));
     }
-    par.trigger('relaxngui_change');
+    target.trigger('relaxngui_change');
   });
   target.unbind('blur.relaxngui');
   target.on('blur.relaxngui','input, textarea, [contenteditable]',function(ev){
@@ -627,7 +634,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     if (par.is("[data-relaxngui-onchange]")) {
       eval(par.attr('data-relaxngui-onchange'));
     }
-    par.trigger('relaxngui_change');
+    target.trigger('relaxngui_change');
   });
   target.unbind('keypress.relaxngui');
   target.on('keypress.relaxngui','input',function(ev){
@@ -637,7 +644,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if (par.is("[data-relaxngui-onchange]")) {
         eval(par.attr('data-relaxngui-onchange'));
       }
-      par.trigger('relaxngui_change');
+      target.trigger('relaxngui_change');
     }
   });
 
