@@ -200,8 +200,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $.each($(tag).children('choice'), function(k,v) {
       if (v.hasAttributeNS('http://rngui.org','href') && v.hasAttributeNS('http://rngui.org','extract')) {
         second = labextract('datalist',v);
+
+        let href_url = v.getAttributeNS('http://rngui.org','href');
+        if (href_url && typeof href_url == 'string' && href_url.match(/^javascript:/)) {
+          href_url = href_url.replace(/^javascript:/,'');
+          href_url = ceval ? ceval(href_url) : eval(href_url);
+        }
+
         $.ajax({
-          url: v.getAttributeNS('http://rngui.org','href'),
+          url: href_url,
           async: false,
           success: function(data) {
             var res = eval(v.getAttributeNS('http://rngui.org','extract'));
