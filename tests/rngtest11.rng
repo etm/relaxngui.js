@@ -1,0 +1,57 @@
+<element rngui:version="1.2" rngui:header="Arguments" name="arguments" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org" rngui:labellength="20">
+  <rngui:script>
+    console.log('rrr');
+  </rngui:script>
+  <element name="orgmodel" rngui:label="Organisation Model">
+    <data type="string" rngui:label="Link to an XML Org-Model"/>
+  </element>
+  <element name="form" rngui:label="Form Link">
+    <data type="string" rngui:label="Link to an HTML Form"/>
+  </element>
+  <element name="role" rngui:label="Role">
+    <data type="string" rngui:label="e.g. Assistant"/>
+  </element>
+  <element name="priority" rngui:label="Priority" rngui:default="1">
+    <data type="positiveInteger" rngui:label="a number between 1 and n"/>
+  </element>
+  <element name="handling" rngui:label="Handling" rngui:onchange="self.relaxngui_toggle('> arguments > collect','> arguments > deadline')">
+    <attribute name="rngui-nonfunctional"/>
+    <choice>
+      <value rngui:label="By Single Worker">single</value>
+      <value rngui:label="By Multiple Workers">collect</value>
+    </choice>
+  </element>
+  <optional>
+    <element name="collect" rngui:label="Minimum Required Workers" rngui:visible="false">
+      <data type="nonNegativeInteger" rngui:label="a number between 1 and n, zero means all workers in the role"/>
+    </element>
+  </optional>
+  <optional>
+    <element name="deadline" rngui:label="Deadline" rngui:visible="false">
+      <data type="string" rngui:label="deadline, e.g. 3 days"/>
+    </element>
+  </optional>
+  <element name="restrictions" rngui:header="Subject Restrictions" rngui:onchange="console.log('aaaa-u1')">
+    <zeroOrMore rngui:label="New Restriction">
+      <element name="restrictions_item">
+        <element name="mode" rngui:label="Restriction" rngui:onchange="console.log('aaaa1')">
+          <choice>
+            <value>force</value>
+            <value>prohibit</value>
+          </choice>
+        </element>
+        <element name="id" rngui:label='Subject ID' rngui:onchange="console.log('aaaa2')">
+          <data type="string" rngui:label="e.g., Username"/>
+        </element>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="data" rngui:header="Data Elements">
+    <zeroOrMore rngui:label="New Data Element">
+      <element rngui:label='Name'>
+        <anyName/>
+        <data type="string" rngui:label="Value"/>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>

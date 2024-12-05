@@ -71,7 +71,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return ret;
   }; //}}}
 
-  var addelements = function(target,container) { //{{{
+  var addelements = function(target,container,first) { //{{{
     var template = target.parent().find('> .relaxngui_template').clone(true,true);
     template.removeClass('relaxngui_template');
     template.find('[data-relaxngui-template]').each(function(j,t){
@@ -98,11 +98,21 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
 
     container.find('> .relaxngui_control').before(template);
+    if (first == false) {
+      if (container.is("[data-relaxngui-onchange]")) {
+        eval(container.attr('data-relaxngui-onchange'));
+        container.trigger('relaxngui_change');
+      }
+    }
   }; //}}}
 
   var delelements = function(target) { //{{{
     var it = target.parent();
     var par = target.parent().parent();
+    if (par.is("[data-relaxngui-onchange]")) {
+      eval(par.attr('data-relaxngui-onchange'));
+      par.trigger('relaxngui_change');
+    }
     it.remove();
     par.trigger('relaxngui_remove');
   }; //}}}
@@ -288,11 +298,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
     var lencount = rec_lenextract(elements,attr.optional ? attr.lencount : 0);
     $.each(elements,function(k,v){
-      if (attr.mode == 'even') { attr.mode = 'odd' }
-      else { attr.mode = 'even'; }
-
       var tag = $(v)[0];
       if ((tag.localName == 'element') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
+        if (attr.mode == 'even') { attr.mode = 'odd' } else { attr.mode = 'even'; }
+
         var xxx;
         if (template) {
           var yyy = $('<div data-relaxngui-level="' + attr.level + '" class="relaxngui_table ' + attr.mode + '" data-relaxngui-template="true" data-relaxngui-parent="' + path + '" data-relaxngui-path="' + (path == '' ? ' > '  + (typeof elements.attr('name') === 'undefined' ? '*' : elements.attr('name')) : path + ' > ' + (typeof $(tag).attr('name') === 'undefined' ? '*' : $(tag).attr('name'))) + '[data-main]">');
@@ -332,18 +341,29 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           }
         }
       } else if ((tag.localName == 'zeroOrMore') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
+        if (attr.mode == 'even') { attr.mode = 'odd' } else { attr.mode = 'even'; }
+
         var label;
         $.each(tag.attributes,function(k,v){
           if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) { label = v.nodeValue; }
         });
         var but = $('<button class="relaxngui_control">' + label + '</button>');
-            but.on('click',function(ev){ addelements($(ev.target),$(ev.target).parent()); });
+            but.on('click',function(ev){ addelements($(ev.target),$(ev.target).parent(),false); });
 
         ret.append(recshow($(tag).children(),true,path,{ ignore: attr.ignore, mode: attr.mode, level: attr.level }));
         ret.append(but);
       } else if ((tag.localName == 'optional') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
+        if (attr.mode == 'even') { attr.mode = 'odd' } else { attr.mode = 'even'; }
+
         ret.append(recshow($(tag).children('element, zeroOrMore'),false,path,{ ignore: attr.ignore, mode: (attr.mode == 'even' ? 'odd' : 'even'), optional: true, level: attr.level + 1, lencount: lencount }));
       }
+      $(tag).children().each((_,ele) => {
+        if ((ele.localName == 'script') && (ele.namespaceURI == 'http://rngui.org')) {
+          let scr = $('<script/>');
+              scr.text($(ele).text());
+          ret.append(scr);
+        }
+      });
     });
     return ret.children().length > 0 ? ret.children() : undefined;
   }; //}}}
@@ -488,10 +508,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
                   }
                   if ($(but.get(ind)).attr('disabled')) {
                     $(but.get(ind)).removeAttr('disabled');
-                    but.get(ind).click();
+                    addelements($(but.get(ind)),$(but.get(ind)).parent(),true);
                     $(but.get(ind)).attr('disabled','disabled');
                   } else {
-                    but.get(ind).click();
+                    addelements($(but.get(ind)),$(but.get(ind)).parent(),true);
                   }
                 });
               }
