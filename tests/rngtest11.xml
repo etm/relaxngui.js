@@ -1,0 +1,11 @@
+<arguments>
+  <orgmodel/>
+  <form/>
+  <role/>
+  <priority>1</priority>
+  <handling rngui-nonfunctional="true">single</handling>
+  <restrictions/>
+  <data>
+    <asd>sdf</asd>
+  </data>
+</arguments>
