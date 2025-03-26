@@ -451,7 +451,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return $(self.save()).serializePrettyXML();
   } //}}}
 
+  var suspend_events = false;
   this.content = function(data) { //{{{
+    suspend_events = true;
     if (!(data instanceof XMLDocument)) { // data has to be XMLDocument //{{{
       data = $XR($(data).serializeXML());
     } //}}}
@@ -541,6 +543,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         eval(ev);
       });
     }
+    suspend_events = false;
   }; //}}}
 
   (function($) { //{{{
@@ -647,6 +650,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
   target.unbind('change.relaxngui');
   target.on('change.relaxngui','select',function(ev){
+    if (suspend_events) return;
     let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
     let par = $('[data-relaxngui-path="' + pp + '"]',target);
     if (par.is("[data-relaxngui-onchange]")) {
@@ -656,6 +660,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   });
   target.unbind('blur.relaxngui');
   target.on('blur.relaxngui','input, textarea, [contenteditable]',function(ev){
+    if (suspend_events) return;
     let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
     let par = $('[data-relaxngui-path="' + pp + '"]',target);
     if (par.is("[data-relaxngui-onchange]")) {
@@ -665,6 +670,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   });
   target.unbind('keypress.relaxngui');
   target.on('keypress.relaxngui','input',function(ev){
+    if (suspend_events) return;
     if (ev.keyCode == 13) {
       let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
       let par = $('[data-relaxngui-path="' + pp + '"]',target);
