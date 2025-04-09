@@ -611,6 +611,26 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
   }
 
+  this.relaxngui_switch_visibility = function(what,val,...args) {
+    let curval = what.get_val();
+    console.log('hallo');
+    console.log(what);
+    console.log(curval);
+    if (val == curval) {
+      args.forEach((arg, i) => {
+        arg = ' ' + arg.trim() + '[data-main]';
+        let par = $('[data-relaxngui-path="' + arg + '"]',target);
+        par.attr('data-relaxngui-visible','true');
+      });
+    } else {
+      args.forEach((arg, i) => {
+        arg = ' ' + arg.trim() + '[data-main]';
+        let par = $('[data-relaxngui-path="' + arg + '"]',target);
+        par.attr('data-relaxngui-visible','false');
+      });
+    }
+  }
+
   this.relaxngui_toggle = function(...args) {
     args.forEach((arg, i) => {
       arg = ' ' + arg.trim() + '[data-main]';
@@ -652,9 +672,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   target.on('change.relaxngui','select',function(ev){
     if (suspend_events) return;
     let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
-    let par = $('[data-relaxngui-path="' + pp + '"]',target);
-    if (par.is("[data-relaxngui-onchange]")) {
-      eval(par.attr('data-relaxngui-onchange'));
+    let current_element = $(ev.currentTarget);
+    let current_element_main = $('[data-relaxngui-path="' + pp + '"]',target);
+    if (current_element_main.is("[data-relaxngui-onchange]")) {
+      eval(current_element_main.attr('data-relaxngui-onchange'));
     }
     target.trigger('relaxngui_change');
   });
@@ -662,9 +683,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   target.on('blur.relaxngui','input, textarea, [contenteditable]',function(ev){
     if (suspend_events) return;
     let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
-    let par = $('[data-relaxngui-path="' + pp + '"]',target);
-    if (par.is("[data-relaxngui-onchange]")) {
-      eval(par.attr('data-relaxngui-onchange'));
+    let current_element = $(ev.currentTarget);
+    let current_element_main = $('[data-relaxngui-path="' + pp + '"]',target);
+    if (current_element_main.is("[data-relaxngui-onchange]")) {
+      eval(current_element_main.attr('data-relaxngui-onchange'));
     }
     target.trigger('relaxngui_change');
   });
@@ -673,9 +695,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     if (suspend_events) return;
     if (ev.keyCode == 13) {
       let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
-      let par = $('[data-relaxngui-path="' + pp + '"]',target);
-      if (par.is("[data-relaxngui-onchange]")) {
-        eval(par.attr('data-relaxngui-onchange'));
+      let current_element = $(ev.currentTarget);
+      let current_element_main = $('[data-relaxngui-path="' + pp + '"]',target);
+      if (current_element_main.is("[data-relaxngui-onchange]")) {
+        eval(current_element_main.attr('data-relaxngui-onchange'));
       }
       target.trigger('relaxngui_change');
     }
