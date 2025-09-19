@@ -166,7 +166,13 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       } else if (second.type == 'float') {
         node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='" + (second.label != '' ? second.label : 'decimal number') + "'              id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'bool') {
-        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='checkbox'                                                                          title='" + (second.label != '' ? second.label : 'decimal number') + "'              id='" + id + "' placeholder='" + second.label + "'" + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='checkbox'                                                                          title='" + (second.label != '' ? second.label : 'boolean') + "'                     id='" + id + "' placeholder='" + second.label + "'" + os + "></input>"));
+      } else if (second.type == 'color') {
+        let tnode = $("<div class='relaxngui_cell relaxngui_color_container'/>");
+        $.each(datalist,function(didx,dname){
+          tnode.append("<span class='round'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='" + dname[0] + "' id='checkbox_" + id + "_" + didx + "'/><label for='checkbox_" + id + "_" + didx  + "' style='background-color: " + dname[0] + ";'></label></span>");
+        });
+        node.append(tnode);
       } else if (second.type == 'text') {
         node.append($("<div      data-relaxngui-visible='true' contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                          title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + os + "></div>"));
       } else if (second.type == 'datalist') {
@@ -235,6 +241,14 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $.each($(tag).find('choice > value'), function(k,v) {
       second = labextract('datalist',$(v).parent()[0]);
       datalist.push([v.hasAttributeNS('http://rngui.org','label') ? v.getAttributeNS('http://rngui.org','label') : v.textContent,v.textContent]);
+    });
+    $.each($(tag).find('choice'), function(k,v) {
+      if (v.hasAttributeNS('http://rngui.org','type')) {
+        let t = v.getAttributeNS('http://rngui.org','type');
+        if (typeof t == 'string' && t == 'color') {
+          second.type = 'color';
+        }
+      }
     });
 
     ret.attr('data-relaxngui-visible',first.visible);
@@ -616,9 +630,6 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
   this.relaxngui_switch_visibility = function(what,val,...args) {
     let curval = what.get_val();
-    console.log('hallo');
-    console.log(what);
-    console.log(curval);
     if (val == curval) {
       args.forEach((arg, i) => {
         arg = ' ' + arg.trim() + '[data-main]';
