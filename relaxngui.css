@@ -15,6 +15,11 @@
   <http://www.gnu.org/licenses/>.
 */
 
+@font-face {
+  font-family: adawaita-sans;
+  src: url(AdwaitaSans-Regular.ttf);
+}
+
 /* if first thing is a header */
 .relaxngui_table[data-relaxngui-level="0"] .relaxngui_table[data-relaxngui-level="1"]:first-child .relaxngui_header[data-relaxngui-level="1"]:first-child {
   padding-top: 0;
@@ -168,7 +173,7 @@ button.relaxngui_control {
   margin: 0;
   padding: 0.1em 0.2em;
   font-size: 1em;
-  font-family: sans-serif;
+  font-family: adawaita-sans;
 }
 input.relaxngui_cell:nth-child(1) {
   border: 0 none;
@@ -179,7 +184,7 @@ input.relaxngui_cell:nth-child(1) {
   padding: 0.1em 0.2em;
   flex: 1 1 auto;
   font-size: 1em;
-  font-family: sans-serif;
+  font-family: adawaita-sans;
 }
 select.relaxngui_cell:nth-child(3) {
   -webkit-appearance: none;  /*Removes default chrome and safari style*/
@@ -216,7 +221,7 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
   outline: 0px solid transparent;
 }
 [contenteditable].relaxngui_cell:empty:before {
-  font-family: sans-serif;
+  font-family: adawaita-sans;
   color: #a1a1a1;
   white-space: normal;
   content: attr(placeholder);
