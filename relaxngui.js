@@ -682,6 +682,18 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
   });
 
+  target.unbind('change.relaxngui.radio');
+  target.on('input.relaxngui.radio','input:radio',function(ev){
+    if (suspend_events) return;
+    let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';
+    let current_element = $(ev.currentTarget);
+    let current_element_main = $('[data-relaxngui-path="' + pp + '"]',target);
+    if (current_element_main.is("[data-relaxngui-onchange]")) {
+      eval(current_element_main.attr('data-relaxngui-onchange'));
+    }
+    target.trigger('relaxngui_change');
+  });
+
   target.unbind('change.relaxngui');
   target.on('change.relaxngui','select',function(ev){
     if (suspend_events) return;

@@ -239,7 +239,7 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
 .relaxngui_color_container {
 }
 
-.relaxngui_color_container .round input{
+.relaxngui_color_container .round input {
   display: none;
 }
 
