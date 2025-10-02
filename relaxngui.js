@@ -216,10 +216,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $.each($(tag).children('data[type=boolean]'), function(k,v) { second = labextract('bool',v); });
     $.each($(tag).children('text'), function(k,v) { second = labextract('text',v); });
     $.each($(tag).children('attribute[name=rngui-nonfunctional]'), function(k,v) { first.functional = false });
-    $.each($(tag).children('choice'), function(k,v) {
+    $.each($(tag).children('choice, data[type=string] > choice'), function(k,v) {
+      second = labextract('datalist',v);
       if (v.hasAttributeNS('http://rngui.org','href') && v.hasAttributeNS('http://rngui.org','extract')) {
-        second = labextract('datalist',v);
-
         let href_url = v.getAttributeNS('http://rngui.org','href');
         if (href_url && typeof href_url == 'string' && href_url.match(/^javascript:/)) {
           href_url = href_url.replace(/^javascript:/,'');
@@ -237,18 +236,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           }
         });
       }
-    });
-    $.each($(tag).find('choice > value'), function(k,v) {
-      second = labextract('datalist',$(v).parent()[0]);
-      datalist.push([v.hasAttributeNS('http://rngui.org','label') ? v.getAttributeNS('http://rngui.org','label') : v.textContent,v.textContent]);
-    });
-    $.each($(tag).find('choice'), function(k,v) {
       if (v.hasAttributeNS('http://rngui.org','type')) {
         let t = v.getAttributeNS('http://rngui.org','type');
         if (typeof t == 'string' && t == 'color') {
           second.type = 'color';
         }
       }
+      $.each($(v).children('value'), function(k,v) {
+        datalist.push([v.hasAttributeNS('http://rngui.org','label') ? v.getAttributeNS('http://rngui.org','label') : v.textContent,v.textContent]);
+      });
     });
 
     ret.attr('data-relaxngui-visible',first.visible);
