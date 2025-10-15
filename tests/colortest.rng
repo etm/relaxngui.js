@@ -2,6 +2,9 @@
   <element name="label" rngui:label="Label">
     <data type="string" rngui:label="Short description of the task"/>
   </element>
+  <element name="gna" rngui:label="Gna">
+    <data type="boolean" rngui:label="Bla"/>
+  </element>
   <element name="color" rngui:label="Color">
     <choice rngui:type='color'>
       <value>#ffffff</value>
