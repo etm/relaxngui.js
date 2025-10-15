@@ -276,6 +276,19 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
   width: 0.6em;
 }
 
+.relaxngui_color_container .round.none label:after {
+  color: red;
+  border: none;
+  content: "⨉";
+  opacity: 1;
+  position: absolute;
+  top: -3px;
+  left: 0px;
+  transform: rotate(0deg);
+  height: 0.2em;
+  width: 0.6em;
+}
+
 .relaxngui_color_container .round input[type="radio"]:checked + label:after {
   opacity: 1;
 }
