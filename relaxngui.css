@@ -277,16 +277,18 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
 }
 
 .relaxngui_color_container .round.none label:after {
+  margin: 0;
+  padding: 0;
   color: red;
   border: none;
-  content: "⨉";
+  content: "×";
   opacity: 1;
-  position: absolute;
-  top: -3px;
-  left: 0px;
+  position: relative;
+  top: -2.5px;
+  left: 2.5px;
   transform: rotate(0deg);
-  height: 0.2em;
-  width: 0.6em;
+  height: 0;
+  width: 0;
 }
 
 .relaxngui_color_container .round input[type="radio"]:checked + label:after {
