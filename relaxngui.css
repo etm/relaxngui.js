@@ -192,7 +192,7 @@ select.relaxngui_cell:nth-child(3) {
   appearance: none;
   border: none;
 }
-select.relaxngui_cell:nth-child(3), button.relaxngui_cell:nth-child(3), textarea.relaxngui_cell:nth-child(3), input.relaxngui_cell:nth-child(3), [contenteditable].relaxngui_cell:nth-child(3) {
+select.relaxngui_cell:nth-child(3), button.relaxngui_cell:nth-child(3), textarea.relaxngui_cell:nth-child(3), input.relaxngui_cell:nth-child(3), [contenteditable].relaxngui_cell:nth-child(3), ol[contenteditable].relaxngui_cell:nth-child(3) {
   padding:0;
   margin: 0;
   border: 0 none;
@@ -206,7 +206,7 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
   flex: 0 0 auto;
 }
 
-[contenteditable].relaxngui_cell:nth-child(3) {
+[contenteditable].relaxngui_cell:nth-child(3), ol[contenteditable].relaxngui_cell:nth-child(3) {
   overflow-x: auto;
   overflow-wrap: normal;
   white-space: pre;
@@ -214,18 +214,28 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
   font-size: 0.9em;
   padding-bottom: 0.7em;
 }
-[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(3) {
+[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(3), ol[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(3) {
   white-space: pre-wrap;
 }
-[contenteditable].relaxngui_cell:focus {
+[contenteditable].relaxngui_cell:focus, ol[contenteditable].relaxngui_cell:focus {
   outline: 0px solid transparent;
 }
-[contenteditable].relaxngui_cell:empty:before {
+[contenteditable].relaxngui_cell:empty:before, ol[contenteditable].relaxngui_cell:empty:before {
   font-family: adawaita-sans;
   color: #a1a1a1;
   white-space: normal;
   content: attr(placeholder);
   display: block;
+}
+
+ol[contenteditable] {
+  overflow-x: initial!important;
+  padding: 0!important;
+  padding-left: 1.5em!important;
+}
+ol[contenteditable] > li::marker {
+  font-size: 10px;
+  color: grey;
 }
 
 .relaxngui_template {
