@@ -728,4 +728,71 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
   });
 
+  target.unbind('copy.relaxngui.div');
+  target.on('copy.relaxngui.div', 'div[contenteditable]', function (e) {
+    e = e.originalEvent;
+    var selectedText = window.getSelection();
+    var range = selectedText.getRangeAt(0);
+    var selectedTextReplacement = range.toString()
+    e.clipboardData.setData('text/plain', selectedTextReplacement);
+    e.preventDefault(); // default behaviour is to copy any selected text
+  });
+  target.unbind('copy.relaxngui.ol');
+  target.on('copy.relaxngui.ol', 'ol[contenteditable]', function (e) {
+    e = e.originalEvent;
+    let selectedText = window.getSelection();
+    let range = selectedText.getRangeAt(0);
+    let con = range.cloneContents();
+    let n = document.createElement("ol");
+    var selectedTextReplacement = $(n).append(con).get_val();
+    e.clipboardData.setData('text/plain', selectedTextReplacement);
+    e.preventDefault(); // default behaviour is to copy any selected text
+  });
+
+  // Paste fix for contenteditable
+  target.unbind('paste.relaxngui.div');
+  target.on('paste.relaxngui.div', 'div[contenteditable]', function (e) {
+    e.preventDefault();
+    if (e.originalEvent.clipboardData) {
+      content = (e.originalEvent || e).clipboardData.getData('text/plain');
+      document.execCommand('insertText', false, content);
+    }
+  });
+  target.unbind('paste.relaxngui.ol');
+  target.on('paste.relaxngui.ol', 'ol[contenteditable]', function (e) {
+    e.preventDefault();
+    if (e.originalEvent.clipboardData) {
+      content = (e.originalEvent || e).clipboardData.getData('text/plain');
+      // document.execCommand('insertText', false, content);
+      if (window.getSelection) {
+        var selObj = window.getSelection();
+        var selRange = selObj.getRangeAt(0);
+        selRange.deleteContents();
+        let t = content.split(/\r?\n/);
+        if (t.length > 0) {
+          let ft = t.shift();
+          selRange.insertNode(document.createTextNode(ft));
+        }
+        t.forEach((l) => {
+          let n = $("<li></li>");
+          let s = l.replace(/ /g,'');
+          if (s.length != 0) {
+            n.text(l);
+          } else {
+            n.html($('<br>'));
+          }
+          let c = $(selRange.startContainer);
+          if (c.is('li')) {
+            c.after(n);
+          } else if (c.is('ol')) {
+            c.append(n);
+          } else {
+            c = c.parent();
+            c.after(n);
+          }
+        });
+        selObj.collapseToStart();
+      }
+    }
+  });
 };
