@@ -231,12 +231,14 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
 ol[contenteditable] {
   overflow-x: initial!important;
   padding: 0!important;
-  padding-left: 1.5em!important;
+  padding-left: 1.6em!important;
 }
 ol[contenteditable] > li::marker {
-  font-size: 10px;
+  font-size: 0.8em;
   color: grey;
 }
+ol[contenteditable] > li::marker {
+  background-color: black;
 
 .relaxngui_template {
   display: none;

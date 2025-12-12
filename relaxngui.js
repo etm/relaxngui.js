@@ -175,7 +175,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         });
         node.append(tnode);
       } else if (second.type == 'text') {
-        node.append($("<ol      data-relaxngui-visible='true' contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                          title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + os + "></ol>"));
+        node.append($("<ol      data-relaxngui-visible='true' contenteditable='true' data-relaxngui-wrap='" + second.wrap + "' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                          title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + os + "><li></li></ol>"));
       } else if (second.type == 'datalist') {
         var tnode = $("<select   data-relaxngui-visible='true' " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + "                                                                  data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell'                                                                                          title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' size='1'" + os + "></select>");
         $.each(datalist,function(didx,dname){
@@ -478,7 +478,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       x = x.trim();
       y = $(self.save()).serializePrettyXML();
       if (x != y) {
-        console.log('RelaxnGUI: XML changed.');
+        console.info('RelaxnGUI: XML changed.');
         target.find('.relaxngui_dyn').remove();
         target.find('[data-relaxngui-path]').each(function(k,pa){
           var path = $(pa).attr('data-relaxngui-path');
@@ -502,6 +502,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
                 }
               });
             } else {
+
               var att;
               var val;
               if (att = path.match(/(.*)\[([^\]]+)\]$/)) {
