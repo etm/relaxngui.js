@@ -40,7 +40,13 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   }; //}}}
   var lenextract = function(tag, lencount) { //{{{
     $.each(tag.attributes,function(k,v){
-      if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) { lencount = v.nodeValue.length > lencount ? v.nodeValue.length : lencount; }
+      if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) {
+        $('#relaxngui_ruler').text(v.nodeValue);
+        console.log(v.nodeValue);
+        lencount = $('#relaxngui_ruler')[0].getBoundingClientRect().width;
+        console.log(lencount);
+      }
+      // if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) { lencount = v.nodeValue.length > lencount ? v.nodeValue.length : lencount; }
       if ((v.localName == 'labellength') && (v.namespaceURI == 'http://rngui.org')) { lencount = parseInt(v.nodeValue); }
     });
     return lencount;
@@ -260,7 +266,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     let labid = Math.random().toString(36).slice(2);
 
     if (first.name && first.label) {
-      node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "ex' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
+      node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "px' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
     } else if (first.name) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
@@ -609,6 +615,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       return false;
     }
   } //}}}
+
+  if ($('#relaxngui_ruler').length == 0) {
+    $('body').prepend($('<span id="relaxngui_ruler" style="position: absolute; visibility: hidden; white-space: nowrap;"></span>'));
+  }
 
   target.append(recshow($(rng.documentElement),false,'',{ ignore: ignore, mode: 'even', level: 0}));
 
