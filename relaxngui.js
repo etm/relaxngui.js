@@ -260,7 +260,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     let labid = Math.random().toString(36).slice(2);
 
     if (first.name && first.label) {
-      node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + (lencount+1) + "ex' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
+      node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "ex' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
     } else if (first.name) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
