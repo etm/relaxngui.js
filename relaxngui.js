@@ -42,9 +42,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $.each(tag.attributes,function(k,v){
       if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) {
         $('#relaxngui_ruler').text(v.nodeValue);
-        console.log(v.nodeValue);
         lencount = $('#relaxngui_ruler')[0].getBoundingClientRect().width;
-        console.log(lencount);
       }
       // if ((v.localName == 'label') && (v.namespaceURI == 'http://rngui.org')) { lencount = v.nodeValue.length > lencount ? v.nodeValue.length : lencount; }
       if ((v.localName == 'labellength') && (v.namespaceURI == 'http://rngui.org')) { lencount = parseInt(v.nodeValue); }
@@ -736,6 +734,12 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       }
       target.trigger('relaxngui_change');
     }
+  });
+
+  // edit fix for contenteditable
+  target.unbind('input.relaxngui.ol');
+  target.on('input.relaxngui.ol', 'ol[contenteditable]', function (e) {
+    $(e.target).parent().find('br').remove();
   });
 
   target.unbind('copy.relaxngui.div');
