@@ -739,7 +739,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   // edit fix for contenteditable
   target.unbind('input.relaxngui.ol');
   target.on('input.relaxngui.ol', 'ol[contenteditable]', function (e) {
-    $(e.target).parent().find('br').remove();
+    $(e.target).parent().find('> br').remove();
   });
 
   target.unbind('copy.relaxngui.div');
