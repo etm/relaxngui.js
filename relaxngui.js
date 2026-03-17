@@ -506,7 +506,6 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
                 }
               });
             } else {
-
               var att;
               var val;
               if (att = path.match(/(.*)\[([^\]]+)\]$/)) {
