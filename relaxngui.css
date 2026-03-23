@@ -16,7 +16,7 @@
 */
 
 @font-face {
-  font-family: adawaita-sans;
+  font-family: adwaita-sans;
   src: url(AdwaitaSans-Regular.ttf);
 }
 
@@ -173,7 +173,7 @@ button.relaxngui_control {
   margin: 0;
   padding: 0.1em 0.2em;
   font-size: 1em;
-  font-family: adawaita-sans;
+  font-family: adwaita-sans;
 }
 input.relaxngui_cell:nth-child(1) {
   border: 0 none;
@@ -184,7 +184,7 @@ input.relaxngui_cell:nth-child(1) {
   padding: 0.1em 0.2em;
   flex: 1 1 auto;
   font-size: 1em;
-  font-family: adawaita-sans;
+  font-family: adwaita-sans;
 }
 select.relaxngui_cell:nth-child(3) {
   -webkit-appearance: none;  /*Removes default chrome and safari style*/
@@ -221,7 +221,7 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
   outline: 0px solid transparent;
 }
 [contenteditable].relaxngui_cell:empty:before, ol[contenteditable].relaxngui_cell:empty:before {
-  font-family: adawaita-sans;
+  font-family: adwaita-sans;
   color: #a1a1a1;
   white-space: normal;
   content: attr(placeholder);
