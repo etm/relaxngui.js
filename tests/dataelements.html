@@ -31,6 +31,7 @@
     <!-- custom stuff, play arround  -->
 
     <script type="text/javascript">
+      var rngui;
       $("body").ready(function(){
         $.ajax({
           type: "GET",
@@ -40,7 +41,7 @@
               type: "GET",
               url: "dataelements.xml",
               success: function(data){
-                var rngui = new RelaxNGui(rng,$('#show'));
+                rngui = new RelaxNGui(rng,$('#show'));
                 rngui.content(data);
                 $('#saveall').on('click',function(){
                   console.log($(rngui.save()).serializePrettyXML());
