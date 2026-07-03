@@ -396,6 +396,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   var rec_xml2json = function(node) { //{{{
     var obj = {};
     $.each(node.attributes || [],function(i,attr){
+      if (attr.name == 'xmlns' || attr.name.match(/^xmlns:/)) {
+        return;
+      }
       obj['@' + attr.name] = attr.value;
     });
     var text = '';
