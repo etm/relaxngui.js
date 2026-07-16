@@ -431,7 +431,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   this.save_raw = function() { //{{{
     var xml;
     var curr;
-    var tar = target.find('[data-relaxngui-path][data-relaxngui-visible=true]:not([data-relaxngui-template=true])');
+    var tar = target.find('[data-relaxngui-path][data-relaxngui-visible=true]:not([data-relaxngui-template=true])').filter(function(){
+      return $(this).parents('[data-relaxngui-visible=false]').length == 0;
+    });
     for (var i = 0; i<tar.length;) {
       var path = $(tar[i]).attr('data-relaxngui-path');
       var parent_path = $(tar[i]).attr('data-relaxngui-parent');
@@ -660,7 +662,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   var self = this;
 
   var relaxngui_init_target;
-  this.relaxngui_visible = function(what,...args) {
+  this.relaxngui_visible = function(what,...args) { //{{{
     let curval = $('[data-relaxngui-path="' + relaxngui_init_target + '"]',target).get_val();
     if (what == curval) {
       args.forEach((arg, i) => {
@@ -669,9 +671,19 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         par.attr('data-relaxngui-visible','true');
       });
     }
-  }
+  } //}}}
+  this.relaxngui_hidden = function(what,...args) { //{{{
+    let curval = $('[data-relaxngui-path="' + relaxngui_init_target + '"]',target).get_val();
+    if (what == curval) {
+      args.forEach((arg, i) => {
+        arg = ' ' + arg.trim() + '[data-main]';
+        let par = $('[data-relaxngui-path="' + arg + '"]',target);
+        par.attr('data-relaxngui-visible','false');
+      });
+    }
+  } //}}}
 
-  this.relaxngui_switch_visibility = function(what,val,...args) {
+  this.relaxngui_switch_visibility = function(what,val,...args) { //{{{
     let curval = what.get_val();
     if (val == curval) {
       args.forEach((arg, i) => {
@@ -686,9 +698,29 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         par.attr('data-relaxngui-visible','false');
       });
     }
-  }
+  } //}}}
+  this.relaxngui_hide = function(what,val,...args) { //{{{
+    let curval = what.get_val();
+    if (val == curval) {
+      args.forEach((arg, i) => {
+        arg = ' ' + arg.trim() + '[data-main]';
+        let par = $('[data-relaxngui-path="' + arg + '"]',target);
+        par.attr('data-relaxngui-visible','false');
+      });
+    }
+  } //}}}
+  this.relaxngui_show = function(what,val,...args) { //{{{
+    let curval = what.get_val();
+    if (val == curval) {
+      args.forEach((arg, i) => {
+        arg = ' ' + arg.trim() + '[data-main]';
+        let par = $('[data-relaxngui-path="' + arg + '"]',target);
+        par.attr('data-relaxngui-visible','true');
+      });
+    }
+  } //}}}
 
-  this.relaxngui_toggle = function(...args) {
+  this.relaxngui_toggle = function(...args) { //{{{
     args.forEach((arg, i) => {
       arg = ' ' + arg.trim() + '[data-main]';
       let par = $('[data-relaxngui-path="' + arg + '"]',target);
@@ -699,7 +731,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         par.attr('data-relaxngui-visible','true');
       }
     });
-  };
+  }; //}}}
 
   // always bind on with custom postfix
   // always unbind before bind, to not have pile up the binds, expecially because we redo Relaxngui every time something has changed
