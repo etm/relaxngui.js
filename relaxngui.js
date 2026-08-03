@@ -53,9 +53,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   var labextract = function(type,tag) { //{{{
     var ret = { 'type': type, 'wrap': false, 'readonly': false, 'label': '', default: '' };
     $.each(tag.attributes,function(k,v){
-      if ((v.localName == 'label')    && (v.namespaceURI == 'http://rngui.org')) { ret['label']    = v.nodeValue; }
-      if ((v.localName == 'readonly') && (v.namespaceURI == 'http://rngui.org')) { ret['readonly'] = v.nodeValue == 'true' ? true : false; }
-      if ((v.localName == 'wrap')     && (v.namespaceURI == 'http://rngui.org')) { ret['wrap']     = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'label')       && (v.namespaceURI == 'http://rngui.org')) { ret['label']       = v.nodeValue; }
+      if ((v.localName == 'readonly')    && (v.namespaceURI == 'http://rngui.org')) { ret['readonly']    = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'wrap')        && (v.namespaceURI == 'http://rngui.org')) { ret['wrap']        = v.nodeValue == 'true' ? true : false; }
+      if ((v.localName == 'filehandler') && (v.namespaceURI == 'http://rngui.org')) { ret['filehandler'] = v.nodeValue; }
     });
     $.each(tag.children,function(k,v){
       if ((v.localName == 'param') && (v.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
@@ -78,6 +79,20 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   var addelements = function(target,container,first) { //{{{
     var template = target.parent().find('> .relaxngui_template').clone(true,true);
     template.removeClass('relaxngui_template');
+
+    // setting id for every row
+    template.find('.relaxngui_row').not(template.find('.relaxngui_template .relaxngui_row')).each(function(){
+      let row = $(this);
+
+      let newid = Math.random().toString(36).slice(2);
+
+      row.find('[id="_"]').attr('id', newid);
+      row.find('[for="_"]').attr('for', newid);
+      row.find('[name="_"]').attr('name', newid);
+      row.find('[id^="_checkbox_"], [id="_file"], [id="_button"]').each(function(){ this.id = newid + this.id; });
+      row.find('[for^="_checkbox_"]').each(function(){ this.setAttribute('for', newid + this.getAttribute('for')); });
+    });
+
     template.find('[data-relaxngui-template]').each(function(j,t){
       $(t).attr('data-relaxngui-template',false);
     });
@@ -156,7 +171,13 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       node.append($("<input      data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' readonly='readonly'" + os + "></input>"));
     else {
       if (second.type == 'string') {
-        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
+        if (second.filehandler) {
+          node.append($("<input type='file' style='display:none' id='" + id + "file'></input>"));
+          node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'>open</button>"));
+          node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + " readonly='readonly'></input>"));
+        } else {
+          node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
+        }
       } else if (second.type == 'integer') {
         node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+)|(^!.*)'                                       title='" + (second.label != '' ? second.label : 'integer number') + "'              id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
       } else if (second.type == 'positiveInteger') {
@@ -168,14 +189,14 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       } else if (second.type == 'date') {
         node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01]))|(^!.*)' title='" + (second.label != '' ? second.label : 'date') + "'                        id='" + id + "' placeholder='" + second.label + "'" + os + "></input>"));
       } else if (second.type == 'float') {
-        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='" + (second.label != '' ? second.label : 'decimal number') + "'              id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));
+        node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'     pattern='([\\+\\-]?[0-9]+([.][0-9]*)?|[.][0-9]+)|(^!.*)'                 title='" + (second.label != '' ? second.label : 'decimal number') + "'              id='" + id + "' placeholder='" + second.label + "'" + (second.min != undefined ? (" min='" + second.min + "'") : '') + (second.max != undefined ? (" max='" + second.max + "'") : '') + os + "></input>"));;
       } else if (second.type == 'bool') {
         node.append($("<input    data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='checkbox'                                                                          title='" + (second.label != '' ? second.label : 'boolean') + "'                     id='" + id + "' placeholder='" + second.label + "'" + os + "></input>"));
       } else if (second.type == 'color') {
         let tnode = $("<div class='relaxngui_cell relaxngui_color_container'/>");
-        tnode.append("<span class='round none'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='' id='checkbox_" + id + "_" + "none" + "'/><label for='checkbox_" + id + "_" + "none" + "'></label></span>");
+        tnode.append("<span class='round none'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='' id='" + id + "checkbox_none'/><label for='" + id + "checkbox_none'></label></span>");
         $.each(datalist,function(didx,dname){
-          tnode.append("<span class='round'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='" + dname[0] + "' id='checkbox_" + id + "_" + didx + "'/><label for='checkbox_" + id + "_" + didx  + "' style='background-color: " + dname[0] + ";'></label></span>");
+          tnode.append("<span class='round'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='" + dname[0] + "' id='" + id + "checkbox_" + didx + "'/><label for='" + id + "checkbox_" + didx + "' style='background-color: " + dname[0] + ";'></label></span>");
         });
         node.append(tnode);
       } else if (second.type == 'text') {
@@ -260,8 +281,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     if (first.oninit) {
       ret.attr('data-relaxngui-oninit',first.oninit);
     }
+    if (second.filehandler) {
+      ret.attr('data-relaxngui-filehandler',second.filehandler);
+    }
 
-    let labid = Math.random().toString(36).slice(2);
+    let labid = template ? '_' : Math.random().toString(36).slice(2); // templates have empty ids, ids are later added in addelements
 
     if (first.name && first.label) {
       node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "px' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
@@ -757,7 +781,32 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
   });
 
-  target.unbind('change.relaxngui.radio');
+  target.unbind('click.file.button');
+  target.on('click.file.button','button.file',function(ev){
+    let id = ev.currentTarget.id.replace(/_button/,'');
+    document.getElementById(id + '_file').click();
+  });
+
+  target.unbind('change.file');
+  target.on('change.file','input:file',function(ev){
+    let id = ev.currentTarget.id.replace(/_file/,'');
+    if (typeof window.FileReader !== 'function') {
+      alert('FileReader not yet supportet');
+      return;
+    }
+    let file = document.getElementById(id + '_file').files[0];
+    let content = new FileReader();
+    content.onload = function(){
+      let current_element = $(ev.currentTarget);
+      let res = eval(current_element.parents('[data-relaxngui-filehandler]').attr('data-relaxngui-filehandler'));
+      $(document.getElementById(id)).val(res);
+    }
+    content.onerror = function(){ }
+    content.onabort = function(){ }
+    content.readAsText(file);
+  });
+
+  target.unbind('input.relaxngui.radio');
   target.on('input.relaxngui.radio','input:radio',function(ev){
     if (suspend_events) return;
     let pp = $(ev.currentTarget).attr('data-relaxngui-path') + '[data-main]';

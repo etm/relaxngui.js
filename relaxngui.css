@@ -179,34 +179,34 @@ input.relaxngui_cell:nth-child(1) {
   border: 0 none;
   background: none;
 }
-.relaxngui_cell:nth-child(3) {
+.relaxngui_cell:nth-child(n+3) {
   margin: 0;
   padding: 0.1em 0.2em;
   flex: 1 1 auto;
   font-size: 1em;
   font-family: adwaita-sans;
 }
-select.relaxngui_cell:nth-child(3) {
+select.relaxngui_cell:nth-child(n+3) {
   -webkit-appearance: none;  /*Removes default chrome and safari style*/
   -moz-appearance: none; /* Removes Default Firefox style*/
   appearance: none;
   border: none;
 }
-select.relaxngui_cell:nth-child(3), button.relaxngui_cell:nth-child(3), textarea.relaxngui_cell:nth-child(3), input.relaxngui_cell:nth-child(3), [contenteditable].relaxngui_cell:nth-child(3), ol[contenteditable].relaxngui_cell:nth-child(3) {
+select.relaxngui_cell:nth-child(n+3), button.relaxngui_cell:nth-child(n+3), textarea.relaxngui_cell:nth-child(n+3), input.relaxngui_cell:nth-child(n+3), [contenteditable].relaxngui_cell:nth-child(n+3), ol[contenteditable].relaxngui_cell:nth-child(n+3) {
   padding:0;
   margin: 0;
   border: 0 none;
   background: none;
   margin-left: 1ex;
 }
-input.relaxngui_cell:nth-child(3):invalid {
+input.relaxngui_cell:nth-child(n+3):invalid {
   color: red;
 }
-input.relaxngui_cell:nth-child(3)[type=checkbox] {
+input.relaxngui_cell:nth-child(n+3)[type=checkbox] {
   flex: 0 0 auto;
 }
 
-[contenteditable].relaxngui_cell:nth-child(3), ol[contenteditable].relaxngui_cell:nth-child(3) {
+[contenteditable].relaxngui_cell:nth-child(n+3), ol[contenteditable].relaxngui_cell:nth-child(n+3) {
   overflow-x: auto;
   overflow-wrap: normal;
   white-space: pre;
@@ -214,7 +214,7 @@ input.relaxngui_cell:nth-child(3)[type=checkbox] {
   font-size: 0.9em;
   padding-bottom: 0.7em;
 }
-[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(3), ol[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(3) {
+[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(n+3), ol[contenteditable][data-relaxngui-wrap='true'].relaxngui_cell:nth-child(n+3) {
   white-space: pre-wrap;
 }
 [contenteditable].relaxngui_cell:focus, ol[contenteditable].relaxngui_cell:focus {
