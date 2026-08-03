@@ -216,7 +216,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     }
   }; //}}}
 
-  var recshow_single = function(tag,ret,template,path,lencount,optional){ //{{{
+  var recshow_single = function(tag,ret,template,template_child,path,lencount,optional){ //{{{
     var node = $('<div class="relaxngui_row"/>');
     var first = { name: null, label: null, labeltype: '', default: null, visible: true, functional: true, onchange: null, oninit: null, hint: null };
     var second = {};
@@ -285,7 +285,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       ret.attr('data-relaxngui-filehandler',second.filehandler);
     }
 
-    let labid = template ? '_' : Math.random().toString(36).slice(2); // templates have empty ids, ids are later added in addelements
+    let labid = template_child ? '_' : Math.random().toString(36).slice(2); // templates have empty ids, ids are later added in addelements
 
     if (first.name && first.label) {
       node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "px' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
@@ -328,7 +328,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return retcount;
   } //}}}
 
-  var recshow = function(elements,template,path,attr) { //{{{
+  var recshow = function(elements,template,template_child,path,attr) { //{{{
+    if (template) { template_child = true; }
+
     // delete all elements with relaxngui:ignore
     if (attr.ignore) {
       var tele = $.grep(elements,function(tagv){
@@ -376,12 +378,12 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         var rcount = 0;
         $(tag).children('attribute:not([name=rngui-nonfunctional])').each(function(l,w){
           var ttag = $(w)[0];
-          rcount += recshow_single(ttag,xxx,template,path + ' > ' + $(tag).attr('name'),lencount,attr.optional ? true : false);
+          rcount += recshow_single(ttag,xxx,template,template_child,path + ' > ' + $(tag).attr('name'),lencount,attr.optional ? true : false);
         });
-        rcount += recshow_single(tag,xxx,template,path,lencount,attr.optional ? true : false);
+        rcount += recshow_single(tag,xxx,template,template_child,path,lencount,attr.optional ? true : false);
 
         var sub;
-        if (sub = recshow($(tag).children('element, zeroOrMore, optional'),false,path + ' > ' + $(tag).attr('name'),{ ignore: attr.ignore, mode: (attr.mode == 'even' && rcount % 2 == 0 ? 'odd' : 'even' ), level: attr.level + 1 })) {
+        if (sub = recshow($(tag).children('element, zeroOrMore, optional'),false,template_child,path + ' > ' + $(tag).attr('name'),{ ignore: attr.ignore, mode: (attr.mode == 'even' && rcount % 2 == 0 ? 'odd' : 'even' ), level: attr.level + 1 })) {
           var inode = xxx.append(sub);
           if (template) {
             inode.find('[data-relaxngui-template]').each(function(j,t){
@@ -399,12 +401,12 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         var but = $('<button class="relaxngui_control">' + label + '</button>');
             but.on('click',function(ev){ addelements($(ev.target),$(ev.target).parent(),false); });
 
-        ret.append(recshow($(tag).children(),true,path,{ ignore: attr.ignore, mode: attr.mode, level: attr.level }));
+        ret.append(recshow($(tag).children(),true,template_child,path,{ ignore: attr.ignore, mode: attr.mode, level: attr.level }));
         ret.append(but);
       } else if ((tag.localName == 'optional') && (tag.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
         if (attr.mode == 'even') { attr.mode = 'odd' } else { attr.mode = 'even'; }
 
-        ret.append(recshow($(tag).children('element, zeroOrMore'),false,path,{ ignore: attr.ignore, mode: (attr.mode == 'even' ? 'odd' : 'even'), optional: true, level: attr.level + 1, lencount: lencount }));
+        ret.append(recshow($(tag).children('element, zeroOrMore'),false,template_child,path,{ ignore: attr.ignore, mode: (attr.mode == 'even' ? 'odd' : 'even'), optional: true, level: attr.level + 1, lencount: lencount }));
       }
       $(tag).children().each((_,ele) => {
         if ((ele.localName == 'script') && (ele.namespaceURI == 'http://rngui.org')) {
@@ -681,7 +683,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     $('body').prepend($('<span id="relaxngui_ruler" style="position: absolute; visibility: hidden; white-space: nowrap;"></span>'));
   }
 
-  target.append(recshow($(rng.documentElement),false,'',{ ignore: ignore, mode: 'even', level: 0}));
+  target.append(recshow($(rng.documentElement),false,false,'',{ ignore: ignore, mode: 'even', level: 0}));
 
   var self = this;
 

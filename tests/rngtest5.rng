@@ -42,6 +42,9 @@
             <element name="tool-orientation" rngui:label="Orientation">
               <data type="string" rngui:label="Orientation in Tool Holder"/>
             </element>
+            <element name="File" rngui:label="File">
+              <data type="string" rngui:label="Name" rngui:filehandler="console.log(file); '/storage/3/' + file.name;"/>
+            </element>
             <element name="corrections" rngui:header="Corrections">
               <zeroOrMore rngui:label="Add Correction">
                 <element name="correction">
@@ -54,6 +57,13 @@
                   <attribute name="radius" rngui:label="Radius">
                     <data type="float"/>
                   </attribute>
+                </element>
+              </zeroOrMore>
+            </element>
+            <element name="files" rngui:header="Files">
+              <zeroOrMore rngui:label="Add File">
+                <element rngui:label='Name'>
+                  <anyName/>
                 </element>
               </zeroOrMore>
             </element>
