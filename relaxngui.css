@@ -136,13 +136,14 @@
   width: 100%;
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 .relaxngui_hint {
   padding-left: 1em;
   opacity: 0.6;
 }
 .relaxngui_hint::before {
- 	content: "↳ ";
+  content: "\f114";
 }
 .relaxngui_header {
   margin: 0;
@@ -303,4 +304,9 @@ ol[contenteditable] > li::marker {
 
 .relaxngui_color_container .round input[type="radio"]:checked + label:after {
   opacity: 1;
+}
+
+.relaxngui_row button.file {
+  padding-top: 0;
+  padding-bottom: 0;
 }

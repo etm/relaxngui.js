@@ -173,7 +173,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if (second.type == 'string') {
         if (second.filehandler) {
           node.append($("<input type='file' style='display:none' id='" + id + "file'></input>"));
-          node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'>open</button>"));
+          node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'><i style='font-size: 1.8em;' class='uidash-icon-folder-open'></i></button>"));
           node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + " readonly='readonly'></input>"));
         } else {
           node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
@@ -288,15 +288,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     let labid = template_child ? '_' : Math.random().toString(36).slice(2); // templates have empty ids, ids are later added in addelements
 
     if (first.name && first.label) {
-      node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "px' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'>⇒</span>"));
+      node.append($("<label class='relaxngui_cell" + (optional && first.default == null && first.visible ? " optional": "") + "' style='min-width: " + lencount + "px' for='" + labid + "'>" + first.label + "</label><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
     } else if (first.name) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
     } else if (first.label) {
       if (first.labeltype == 'xml') {
-        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' placeholder='" + first.label + "'></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
       } else {
-        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$'       placeholder='" + first.label + "'></input><span class='relaxngui_cell'>⇒</span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$'       placeholder='" + first.label + "'></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
       }
     }
 
