@@ -163,7 +163,18 @@
   opacity: 0.6;
 }
 .relaxngui_hint::before {
-  content: "\f114";
+  font-family: uidash-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  vertical-align: -1.5px;
+
+  content: "\f114  ";
 }
 .relaxngui_header {
   margin: 0;
@@ -296,7 +307,7 @@ ol[contenteditable] > li::marker {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  text-shadow: -0.5px -0.5px 0.5px #000, 0.5px -0.5px 0.5px #000, -0.5px 0.5px 0.5px #000, 0.5px 0.5px 0.5px #000;
+  text-shadow: -0.75px -0.75px 0.5px #000, 0.75px -0.75px 0.5px #000, -0.75px 0.75px 0.5px #000, 0.75px 0.75px 0.5px #000;
 }
 
 .relaxngui_color_container .round label:before {
