@@ -196,7 +196,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         let tnode = $("<div class='relaxngui_cell relaxngui_color_container'/>");
         tnode.append("<span class='round none'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='' id='" + id + "checkbox_none'/><label for='" + id + "checkbox_none'></label></span>");
         $.each(datalist,function(didx,dname){
-          tnode.append("<span class='round'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='" + dname[0] + "' id='" + id + "checkbox_" + didx + "'/><label for='" + id + "checkbox_" + didx + "' style='background-color: " + dname[0] + ";'></label></span>");
+          tnode.append("<span class='round'><input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' type='radio' name='" + id + "' value='" + dname[0] + "' id='" + id + "checkbox_" + didx + "'/><label for='" + id + "checkbox_" + didx + "' style='color: " + dname[0] + ";'></label></span>");
         });
         node.append(tnode);
       } else if (second.type == 'text') {
