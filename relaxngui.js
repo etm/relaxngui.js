@@ -76,6 +76,24 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     return ret;
   }; //}}}
 
+  var checkuniqueness = function(container,target) { //{{{
+    let val = $(target).get_val();
+    let eles = container.find('> .relaxngui_dyn > .relaxngui_table > .relaxngui_row > .relaxngui_cell[data-relaxngui-unique="true"]');
+    let seen = false;
+    eles.each((_,ele) => {
+      if (target != ele && $(ele).get_val() == val) {
+        seen = true;
+      }
+    });
+    if (seen) {
+      target.setCustomValidity('Name already used');
+      $(target).addClass('invalid');
+    } else {
+      target.setCustomValidity('');
+      $(target).removeClass('invalid');
+    }
+  }; //}}}
+
   var addelements = function(target,container,first) { //{{{
     var template = target.parent().find('> .relaxngui_template').clone(true,true);
     template.removeClass('relaxngui_template');
@@ -218,7 +236,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
 
   var recshow_single = function(tag,ret,template,template_child,path,lencount,optional){ //{{{
     var node = $('<div class="relaxngui_row"/>');
-    var first = { name: null, label: null, labeltype: '', default: null, visible: true, functional: true, onchange: null, oninit: null, hint: null };
+    var first = { name: null, label: null, labeltype: '', default: null, visible: true, functional: true, onchange: null, oninit: null, hint: null, unique: false };
     var second = {};
     var datalist = [];
     var retcount = 0;
@@ -233,6 +251,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if ((v.localName == 'hint')       && (v.namespaceURI == 'http://rngui.org')) { first.hint       = v.nodeValue; }
     });
 
+    $.each($(tag).children('anyName'), function(k,v) {
+      if (v.hasAttributeNS('http://rngui.org','unique') && v.getAttributeNS('http://rngui.org','unique') == 'true') {
+        first.unique = true;
+      }
+    });
     $.each($(tag).children('data[type=string]'), function(k,v) { second = labextract('string',v); });
     $.each($(tag).children('data[type=integer]'), function(k,v) { second = labextract('integer',v); });
     $.each($(tag).children('data[type=nonNegativeInteger]'), function(k,v) { second = labextract('nonNegativeInteger',v); });
@@ -294,9 +317,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       node.addClass('relaxngui_hidden');
     } else if (first.label) {
       if (first.labeltype == 'xml') {
-        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' placeholder='" + first.label + "'></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' placeholder='" + first.label + "'" + (first.unique ? " data-relaxngui-unique='true'" : '') + "></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
       } else {
-        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$'       placeholder='" + first.label + "'></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$'       placeholder='" + first.label + "'" + (first.unique ? " data-relaxngui-unique='true'" : '') + "></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
       }
     }
 
@@ -781,6 +804,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     if (!(input.val() == '') && !pattern.test(input.val())) {
       input.val(lastval);
     }
+  });
+
+  target.unbind('input.relaxngui.unique');
+  target.on('input.relaxngui.unique','[data-relaxngui-unique="true"]',function(ev){
+    checkuniqueness($(ev.currentTarget).closest('.relaxngui_dyn').parent(),this);
   });
 
   target.unbind('click.file.button');
