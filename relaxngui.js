@@ -515,7 +515,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           }
           pp.last().append(curr);
         } else if (ma.match(/\[data-name\]/)) {
-          if ($(tar[i]).get_val()) {
+          if ($(tar[i]).get_val() && tar[i].checkValidity()) {
             var pp = $(parent_path,xml);
             parent_ns = pp[0].namespaceURI;
             if (typeof parent_ns !== 'undefined' && parent_ns != undefined && parent_ns != null && parent_ns != '') {
