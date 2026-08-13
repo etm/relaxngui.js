@@ -830,6 +830,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       let current_element = $(ev.currentTarget);
       let res = eval(current_element.parents('[data-relaxngui-filehandler]').attr('data-relaxngui-filehandler'));
       $(document.getElementById(id)).val(res);
+      target.trigger('relaxngui_change');
     }
     content.onerror = function(){ }
     content.onabort = function(){ }
