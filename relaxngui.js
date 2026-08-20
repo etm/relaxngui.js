@@ -192,7 +192,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         if (second.filehandler) {
           node.append($("<input type='file' style='display:none' id='" + id + "file'></input>"));
           node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'><i style='font-size: 1.8em;' class='uidash-icon-folder-open'></i></button>"));
-          node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + " readonly='readonly'></input>"));
+          node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + " data-relaxngui-pattern='https:\/\/[^\s$.?#].[^\s]*' " + os + "></input>"));
         } else {
           node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
         }
@@ -932,9 +932,14 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         var selRange = selObj.getRangeAt(0);
         selRange.deleteContents();
         let t = content.split(/\r?\n/);
+        let anchor = null;
+        let container = null;
         if (t.length > 0) {
           let ft = t.shift();
-          selRange.insertNode(document.createTextNode(ft));
+          let textNode = document.createTextNode(ft);
+          selRange.insertNode(textNode);
+          container = $(textNode).parent();
+          anchor = container.is('li') ? container : container.closest('li');
         }
         t.forEach((l) => {
           let n = $("<li></li>");
@@ -944,15 +949,12 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           } else {
             n.html($('<br>'));
           }
-          let c = $(selRange.startContainer);
-          if (c.is('li')) {
-            c.after(n);
-          } else if (c.is('ol')) {
-            c.append(n);
+          if (anchor && anchor.length) {
+            anchor.after(n);
           } else {
-            c = c.parent();
-            c.after(n);
+            container.append(n);
           }
+          anchor = n;
         });
         selObj.collapseToStart();
       }
