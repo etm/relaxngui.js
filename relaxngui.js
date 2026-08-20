@@ -56,7 +56,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if ((v.localName == 'label')       && (v.namespaceURI == 'http://rngui.org')) { ret['label']       = v.nodeValue; }
       if ((v.localName == 'readonly')    && (v.namespaceURI == 'http://rngui.org')) { ret['readonly']    = v.nodeValue == 'true' ? true : false; }
       if ((v.localName == 'wrap')        && (v.namespaceURI == 'http://rngui.org')) { ret['wrap']        = v.nodeValue == 'true' ? true : false; }
-      if ((v.localName == 'filehandler') && (v.namespaceURI == 'http://rngui.org')) { ret['filehandler'] = v.nodeValue; }
+      if ((v.localName == 'filehandler') && (v.namespaceURI == 'http://rngui.org')) { ret['filehandler'] = v.nodeValue; ret['pattern'] = 'https:\/\/[^\s$.?#].[^\s]*'; }
     });
     $.each(tag.children,function(k,v){
       if ((v.localName == 'param') && (v.namespaceURI == 'http://relaxng.org/ns/structure/1.0')) {
@@ -192,7 +192,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
         if (second.filehandler) {
           node.append($("<input type='file' style='display:none' id='" + id + "file'></input>"));
           node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'><i style='font-size: 1.8em;' class='uidash-icon-folder-open'></i></button>"));
-          node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + " data-relaxngui-pattern='https:\/\/[^\s$.?#].[^\s]*' " + os + "></input>"));
+          node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + " data-relaxngui-lax-pattern='true' " + os + "></input>"));
         } else {
           node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
         }
@@ -797,12 +797,25 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
     lastval = input.val();
   });
 
-  target.unbind('input.relaxngui');
-  target.on('input.relaxngui','input[pattern]',function(ev){
+  target.unbind('input.relaxngui.force');
+  target.on('input.relaxngui.force','input[pattern]:not([data-relaxngui-lax-pattern])',function(ev){
     let input = $(this);
     let pattern = new RegExp(input.attr('pattern'));
     if (!(input.val() == '') && !pattern.test(input.val())) {
       input.val(lastval);
+    }
+  });
+  target.unbind('input.relaxngui.noforce');
+  target.on('input.relaxngui.noforce','input[pattern][data-relaxngui-lax-pattern]',function(ev){
+    let target = this;
+    let input = $(target);
+    let pattern = new RegExp(input.attr('pattern'));
+    if (!(input.val() == '') && !pattern.test(input.val())) {
+      target.setCustomValidity('Invalid pattern');
+      input.addClass('invalid');
+    } else {
+      target.setCustomValidity('');
+      input.removeClass('invalid');
     }
   });
 
