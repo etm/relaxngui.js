@@ -950,13 +950,12 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   target.unbind('keydown.relaxngui.ol.undo');
   target.on('keydown.relaxngui.ol.undo', 'ol[contenteditable]', function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() == 'z') {
-      e.preventDefault();
       let ol = $(this);
-      let previous = ol.attr('data-previous');
-      if (previous !== undefined) {
-        let current = ol.html();
-        ol.html(previous);
-        ol.attr('data-previous', current);
+      let history = ol.attr('data-previous');
+      if (history !== undefined && history !== '') {
+        e.preventDefault();
+        ol.html(history);
+        ol.attr('data-previous', '');
       }
     }
   });
