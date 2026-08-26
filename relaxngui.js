@@ -902,6 +902,19 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
   target.unbind('input.relaxngui.ol');
   target.on('input.relaxngui.ol', 'ol[contenteditable]', function (e) {
     $(e.target).parent().find('> br').remove();
+    let sel = window.getSelection();
+    if (sel.rangeCount == 0) return;
+    let r = sel.getRangeAt(0);
+    if (r.collapsed && r.startContainer === this) {
+      let lastLi = $(this).children('li').last();
+      if (lastLi.length) {
+        let nr = document.createRange();
+        nr.selectNodeContents(lastLi.get(0));
+        nr.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(nr);
+      }
+    }
   });
 
   target.unbind('copy.relaxngui.div');
