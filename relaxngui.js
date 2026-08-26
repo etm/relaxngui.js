@@ -952,7 +952,22 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           let textNode = document.createTextNode(ft);
           selRange.insertNode(textNode);
           container = $(textNode).parent();
-          anchor = container.is('li') ? container : container.closest('li');
+          if (container.is('ol')) {
+            // no enclosing <li> to continue (e.g. pasting into an empty
+            // <ol>, or one whose whole content was just selected/replaced)
+            // - the first line needs its own <li> too, not bare ol text
+            let li = $("<li></li>");
+            let s = ft.replace(/ /g,'');
+            if (s.length != 0) {
+              li.text(ft);
+            } else {
+              li.html($('<br>'));
+            }
+            textNode.parentNode.replaceChild(li.get(0), textNode);
+            anchor = li;
+          } else {
+            anchor = container.is('li') ? container : container.closest('li');
+          }
         }
         t.forEach((l) => {
           let n = $("<li></li>");
