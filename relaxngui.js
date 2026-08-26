@@ -934,6 +934,19 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       document.execCommand('insertText', false, content);
     }
   });
+  target.unbind('keydown.relaxngui.ol.undo');
+  target.on('keydown.relaxngui.ol.undo', 'ol[contenteditable]', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() == 'z') {
+      e.preventDefault();
+      let ol = $(this);
+      let previous = ol.attr('data-previous');
+      if (previous !== undefined) {
+        let current = ol.html();
+        ol.html(previous);
+        ol.attr('data-previous', current);
+      }
+    }
+  });
   target.unbind('paste.relaxngui.ol');
   target.on('paste.relaxngui.ol', 'ol[contenteditable]', function (e) {
     e.preventDefault();
@@ -941,8 +954,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       content = (e.originalEvent || e).clipboardData.getData('text/plain');
       // document.execCommand('insertText', false, content);
       if (window.getSelection) {
+        $(this).attr('data-previous', $(this).html());
         var selObj = window.getSelection();
         var selRange = selObj.getRangeAt(0);
+        let startLi = $(selRange.startContainer.nodeType == 3 ? selRange.startContainer.parentNode : selRange.startContainer).closest('li');
+        let endLi = $(selRange.endContainer.nodeType == 3 ? selRange.endContainer.parentNode : selRange.endContainer).closest('li');
         selRange.deleteContents();
         let t = content.split(/\r?\n/);
         let anchor = null;
@@ -953,18 +969,21 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           selRange.insertNode(textNode);
           container = $(textNode).parent();
           if (container.is('ol')) {
-            // no enclosing <li> to continue (e.g. pasting into an empty
-            // <ol>, or one whose whole content was just selected/replaced)
-            // - the first line needs its own <li> too, not bare ol text
-            let li = $("<li></li>");
-            let s = ft.replace(/ /g,'');
-            if (s.length != 0) {
-              li.text(ft);
+            let prevLi = $(textNode).prev();
+            if (prevLi.length && prevLi.is('li')) {
+              prevLi.append(textNode);
+              anchor = prevLi;
             } else {
-              li.html($('<br>'));
+              let li = $("<li></li>");
+              let s = ft.replace(/ /g,'');
+              if (s.length != 0) {
+                li.text(ft);
+              } else {
+                li.html($('<br>'));
+              }
+              textNode.parentNode.replaceChild(li.get(0), textNode);
+              anchor = li;
             }
-            textNode.parentNode.replaceChild(li.get(0), textNode);
-            anchor = li;
           } else {
             anchor = container.is('li') ? container : container.closest('li');
           }
@@ -984,6 +1003,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
           }
           anchor = n;
         });
+        if (endLi.length && endLi.get(0) !== startLi.get(0) && anchor && anchor.length) {
+          anchor.append(endLi.contents());
+          endLi.remove();
+        }
         selObj.collapseToStart();
       }
     }
