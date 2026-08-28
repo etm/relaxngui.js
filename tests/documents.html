@@ -43,7 +43,7 @@
               type: "GET",
               url: "documents.xml",
               success: function(data){
-                rngui = new RelaxNGui(rng,$('#show'));
+                rngui = new RelaxNGui(rng,$('#show'),undefined,false,true);
                 rngui.content(data);
                 $('#saveall').on('click',function(){
                   console.log($(rngui.save()).serializePrettyXML());

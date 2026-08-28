@@ -15,7 +15,11 @@
   <http://www.gnu.org/licenses/>.
 */
 
-var RelaxNGui = function(rng,target,ceval,ignore=false) {
+var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
+  if (ceval) {
+    console.log("hallo");
+  }
+
   if (!(rng instanceof XMLDocument)) { // rng has to be XMLDocument //{{{
     rng = $XR($(rng).serializeXML());
   } //}}}
@@ -191,7 +195,9 @@ var RelaxNGui = function(rng,target,ceval,ignore=false) {
       if (second.type == 'string') {
         if (second.filehandler) {
           node.append($("<input type='file' style='display:none' id='" + id + "file'></input>"));
-          node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'><i style='font-size: 1.8em;' class='uidash-icon-folder-open'></i></button>"));
+          if (upload) {
+            node.append($("<button class='file' title='" + (second.label != '' ? second.label : '') + "' id='" + id + "button'><i style='font-size: 1.8em;' class='uidash-icon-folder-open'></i></button>"));
+          }
           node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + " data-relaxngui-lax-pattern='true' " + os + "></input>"));
         } else {
           node.append($("<input  data-relaxngui-visible='true'                                                                  " + (defaul && typeof defaul == 'string' ? 'value="' + defaul + '"' : '') + " data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + tpath + "' class='relaxngui_cell' type='text'                                                                              title='" + (second.label != '' ? second.label : '') + "'                            id='" + id + "' placeholder='" + second.label + "'" + (second.pattern != undefined ? (" pattern='" + second.pattern + "'") : '') + os + "></input>"));
