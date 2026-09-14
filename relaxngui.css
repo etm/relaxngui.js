@@ -246,7 +246,7 @@ select.relaxngui_cell:nth-child(n+3) {
 }
 select.relaxngui_cell:nth-child(n+3), button.relaxngui_cell:nth-child(n+3), textarea.relaxngui_cell:nth-child(n+3), input.relaxngui_cell:nth-child(n+3), [contenteditable].relaxngui_cell:nth-child(n+3), ol[contenteditable].relaxngui_cell:nth-child(n+3) {
   padding:0;
-  margin: 0;
+  margin: 0 0.2em;
   border: 0 none;
   background: none;
   margin-left: 1ex;

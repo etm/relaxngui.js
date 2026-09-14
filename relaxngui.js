@@ -16,10 +16,6 @@
 */
 
 var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
-  if (ceval) {
-    console.log("hallo");
-  }
-
   if (!(rng instanceof XMLDocument)) { // rng has to be XMLDocument //{{{
     rng = $XR($(rng).serializeXML());
   } //}}}
@@ -561,7 +557,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     return $(self.save()).serializePrettyXML();
   } //}}}
   this.save_json = function() { //{{{
-    return JSON.stringify(rec_xml2json(self.save().documentElement),null,2);
+    return JSON.stringify(self.save_object(),null,2);
+  } //}}}
+  this.save_object = function() { //{{{
+    return rec_xml2json(self.save().documentElement);
   } //}}}
 
   var suspend_events = false;
