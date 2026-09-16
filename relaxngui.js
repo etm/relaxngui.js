@@ -852,7 +852,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     }
     content.onerror = function(){ }
     content.onabort = function(){ }
-    content.readAsText(file);
+    content.readAsArrayBuffer(file);
   });
 
   target.unbind('input.relaxngui.radio');
