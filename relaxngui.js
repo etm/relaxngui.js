@@ -485,6 +485,14 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     var tar = target.find('[data-relaxngui-path][data-relaxngui-visible=true]:not([data-relaxngui-template=true])').filter(function(){
       return $(this).parents('[data-relaxngui-visible=false]').length == 0;
     });
+    if (tar.length == 0) { // when empty
+      let root = rng.documentElement;
+      let name = root.getAttribute('name');
+      let ns = root.getAttribute('ns');
+      if (name) {
+        xml = $XR('<' + name + (ns ? ' xmlns="' + ns + '"' : '') + '/>');
+      }
+    }
     for (var i = 0; i<tar.length;) {
       var path = $(tar[i]).attr('data-relaxngui-path');
       var parent_path = $(tar[i]).attr('data-relaxngui-parent');
