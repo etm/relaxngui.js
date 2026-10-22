@@ -444,42 +444,6 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     return ret.children().length > 0 ? ret.children() : undefined;
   }; //}}}
 
-  var rec_xml2json = function(node) { //{{{
-    var obj = {};
-    $.each(node.attributes || [],function(i,attr){
-      if (attr.name == 'xmlns' || attr.name.match(/^xmlns:/)) {
-        return;
-      }
-      obj['@' + attr.name] = attr.value;
-    });
-    if ($(node).contents().length == 0) { return null; }
-    var text = '';
-    $(node).contents().each(function(){
-      if (this.nodeType == 3) { // text node
-        text += this.nodeValue;
-      } else if (this.nodeType == 1) { // element node
-        var name = this.localName;
-        var child = rec_xml2json(this);
-        if (obj[name] === undefined) {
-          obj[name] = child;
-        } else {
-          if (!Array.isArray(obj[name])) {
-            obj[name] = [obj[name]];
-          }
-          obj[name].push(child);
-        }
-      }
-    });
-    text = text.trim();
-    if (text != '') {
-      if (Object.keys(obj).length == 0) {
-        return text;
-      }
-      obj['#text'] = text;
-    }
-    return obj;
-  }; //}}}
-
   this.save_raw = function() { //{{{
     var xml;
     var curr;
@@ -534,7 +498,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
             } else {
               var nn =  $($XR('<' + $(tar[i]).get_val() + '/>').documentElement).text($(tar[i+1]).get_val());
             }
-            $(parent_path,xml).append(nn);
+            pp.last().append(nn);
           }
           i+=1;
         } else if (att = ma.match(/\[([^\]]+)\]$/)) {
@@ -559,6 +523,105 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     });
     return xml;
   }; //}}}
+  this.save_raw_object = function() { //{{{
+    var root;
+    var last = {};
+    var tar = target.find('[data-relaxngui-path][data-relaxngui-visible=true]:not([data-relaxngui-template=true])').filter(function(){
+      return $(this).parents('[data-relaxngui-visible=false]').length == 0;
+    });
+    var mknode = function(name,parent) {
+      var node = { name: name, attrs: {}, children: [], text: undefined, parent: parent };
+      if (parent) { parent.children.push(node); }
+      return node;
+    };
+    if (tar.length == 0) { // when empty, only the root
+      let name = rng.documentElement.getAttribute('name');
+      if (name) {
+        root = mknode(name,undefined);
+      }
+    }
+    for (var i = 0; i<tar.length;) {
+      var path = $(tar[i]).attr('data-relaxngui-path');
+      var parent_path = $(tar[i]).attr('data-relaxngui-parent');
+      if (i == 0) {
+        var par = path.replace(/\[data-main\]/,'').replace(/ > /,'');
+        root = mknode(par,undefined);
+        last[path.replace(/\[data-main\]$/,'')] = root;
+      } else {
+        var ma = path.match(/([^\s]+)$/)[1];
+        var att;
+        if (ma.match(/\*\[data-main\]/)) {
+          // do nothing. seriously. explicitly.
+        } else if (ma.match(/\[data-main\]/)) {
+          var par = ma.replace(/\[data-main\]/,'');
+          var pp = last[parent_path];
+          if (pp) {
+            var curr = mknode(par,pp);
+            if ($(tar[i]).attr('data-relaxngui-functional') == 'false') {
+              curr.attrs['rngui-nonfunctional'] = 'true';
+            }
+            last[path.replace(/\[data-main\]$/,'')] = curr;
+          }
+        } else if (ma.match(/\[data-name\]/)) {
+          if ($(tar[i]).get_val() && tar[i].checkValidity()) {
+            var pp = last[parent_path];
+            if (pp) {
+              var nn = mknode($(tar[i]).get_val(),pp);
+              var val = $(tar[i+1]).get_val();
+              nn.text = val === undefined ? '' : String(val);
+            }
+          }
+          i+=1;
+        } else if (att = ma.match(/\[([^\]]+)\]$/)) {
+          att[1] = att[1].replace(/\\/,'');
+          var pp = last[parent_path];
+          var val = $(tar[i]).get_val();
+          if (pp && val !== undefined) {
+            pp.attrs[att[1]] = String(val);
+          }
+        } else {
+          var curr = last[path];
+          if (curr) {
+            if ($(tar[i]).attr('data-optional') == 'true' && $(tar[i]).get_val() == '') {
+              curr.parent.children.splice(curr.parent.children.indexOf(curr),1);
+              delete last[path];
+            } else {
+              var val = $(tar[i]).get_val();
+              curr.text = val === undefined ? '' : String(val);
+            }
+          }
+        }
+      }
+      i+=1;
+    }
+    var convert = function(node) {
+      var obj = {};
+      $.each(node.attrs,function(k,v){
+        obj['@' + k] = v;
+      });
+      node.children.forEach((child) => {
+        var c = convert(child);
+        if (obj[child.name] === undefined) {
+          obj[child.name] = c;
+        } else {
+          if (!Array.isArray(obj[child.name])) {
+            obj[child.name] = [obj[child.name]];
+          }
+          obj[child.name].push(c);
+        }
+      });
+      if (node.text !== undefined) { // a string, maybe empty
+        if (Object.keys(obj).length == 0) {
+          return node.text;
+        }
+        obj['#text'] = node.text;
+      } else if (Object.keys(obj).length == 0) { // should have children, but has none
+        return [];
+      }
+      return obj;
+    };
+    return root ? convert(root) : [];
+  }; //}}}
   this.save = function() { //{{{
     return self.save_raw();
   } //}}}
@@ -569,7 +632,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     return JSON.stringify(self.save_object(),null,2);
   } //}}}
   this.save_object = function() { //{{{
-    return rec_xml2json(self.save().documentElement) || {};
+    return self.save_raw_object();
   } //}}}
 
   var suspend_events = false;
