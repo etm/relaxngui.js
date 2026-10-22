@@ -452,6 +452,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       }
       obj['@' + attr.name] = attr.value;
     });
+    if ($(node).contents().length == 0) { return null; }
     var text = '';
     $(node).contents().each(function(){
       if (this.nodeType == 3) { // text node
@@ -568,7 +569,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     return JSON.stringify(self.save_object(),null,2);
   } //}}}
   this.save_object = function() { //{{{
-    return rec_xml2json(self.save().documentElement);
+    return rec_xml2json(self.save().documentElement) || {};
   } //}}}
 
   var suspend_events = false;
