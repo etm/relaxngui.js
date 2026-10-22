@@ -529,15 +529,41 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     var tar = target.find('[data-relaxngui-path][data-relaxngui-visible=true]:not([data-relaxngui-template=true])').filter(function(){
       return $(this).parents('[data-relaxngui-visible=false]').length == 0;
     });
-    var mknode = function(name,parent) {
-      var node = { name: name, attrs: {}, children: [], text: undefined, parent: parent };
+    var mknode = function(name,parent,multi) {
+      var node = { name: name, attrs: {}, children: [], text: undefined, parent: parent, multi: multi };
       if (parent) { parent.children.push(node); }
       return node;
+    };
+    var rng_elements = function(ele,repeated=false) { // child elements of a schema element, through wrappers: [[element,repeated],...]
+      let ret = [];
+      $(ele).children().each((_,c) => {
+        if (c.localName == 'element') {
+          ret.push([c,repeated]);
+        } else if (['zeroOrMore','oneOrMore','optional','group','interleave','choice'].includes(c.localName)) {
+          ret = ret.concat(rng_elements(c,repeated || c.localName == 'zeroOrMore' || c.localName == 'oneOrMore'));
+        }
+      });
+      return ret;
+    };
+    var rng_find = function(path) { // schema element for a path, e.g. ' > groups > group'
+      let names = path.split(' > ').filter((n) => n != '');
+      let ele = rng.documentElement;
+      if (ele.getAttribute('name') != names[0]) { return undefined; }
+      for (let n of names.slice(1)) {
+        let found = rng_elements(ele).find(([e,_]) => n == '*' ? !e.hasAttribute('name') : e.getAttribute('name') == n);
+        if (!found) { return undefined; }
+        ele = found[0];
+      }
+      return ele;
+    };
+    var multi_rng = function(ele) { // children can share a name: repeated (zeroOrMore, oneOrMore) elements without unique names
+      if (!ele) { return false; }
+      return rng_elements(ele).some(([e,repeated]) => repeated && $(e).children('anyName').filter((_,a) => a.getAttributeNS('http://rngui.org','unique') == 'true').length == 0);
     };
     if (tar.length == 0) { // when empty, only the root
       let name = rng.documentElement.getAttribute('name');
       if (name) {
-        root = mknode(name,undefined);
+        root = mknode(name,undefined,multi_rng(rng.documentElement));
       }
     }
     for (var i = 0; i<tar.length;) {
@@ -545,7 +571,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       var parent_path = $(tar[i]).attr('data-relaxngui-parent');
       if (i == 0) {
         var par = path.replace(/\[data-main\]/,'').replace(/ > /,'');
-        root = mknode(par,undefined);
+        root = mknode(par,undefined,multi_rng(rng_find(path.replace(/\[data-main\]$/,''))));
         last[path.replace(/\[data-main\]$/,'')] = root;
       } else {
         var ma = path.match(/([^\s]+)$/)[1];
@@ -556,7 +582,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
           var par = ma.replace(/\[data-main\]/,'');
           var pp = last[parent_path];
           if (pp) {
-            var curr = mknode(par,pp);
+            var curr = mknode(par,pp,multi_rng(rng_find(path.replace(/\[data-main\]$/,''))));
             if ($(tar[i]).attr('data-relaxngui-functional') == 'false') {
               curr.attrs['rngui-nonfunctional'] = 'true';
             }
@@ -566,7 +592,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
           if ($(tar[i]).get_val() && tar[i].checkValidity()) {
             var pp = last[parent_path];
             if (pp) {
-              var nn = mknode($(tar[i]).get_val(),pp);
+              var nn = mknode($(tar[i]).get_val(),pp,false);
               var val = $(tar[i+1]).get_val();
               nn.text = val === undefined ? '' : String(val);
             }
@@ -601,7 +627,10 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       });
       node.children.forEach((child) => {
         var c = convert(child);
-        if (obj[child.name] === undefined) {
+        if (node.multi) { // children can share a name, always an array
+          if (obj[child.name] === undefined) { obj[child.name] = []; }
+          obj[child.name].push(c);
+        } else if (obj[child.name] === undefined) {
           obj[child.name] = c;
         } else {
           if (!Array.isArray(obj[child.name])) {
@@ -616,11 +645,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
         }
         obj['#text'] = node.text;
       } else if (Object.keys(obj).length == 0) { // should have children, but has none
-        return [];
+        return node.multi ? [] : {};
       }
       return obj;
     };
-    return root ? convert(root) : [];
+    return root ? convert(root) : {};
   }; //}}}
   this.save = function() { //{{{
     return self.save_raw();
