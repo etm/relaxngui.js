@@ -1,0 +1,28 @@
+{
+  "name": "relaxngui",
+  "version": "1.0.0",
+  "description": "Annotate RelaxNG schemas and use them as UI templates to generate/edit XML files in HTML forms.",
+  "keywords": ["relaxng", "rng", "xml", "forms", "ui", "jquery", "cpee"],
+  "homepage": "https://github.com/etm/relaxngui.js",
+  "bugs": "https://github.com/etm/relaxngui.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/etm/relaxngui.js.git"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Juergen \"eTM\" Mangler <juergen.mangler@gmail.com>",
+  "contributors": [
+    "Heinrich \"Junior\" Fenkart"
+  ],
+  "main": "relaxngui.js",
+  "style": "relaxngui.css",
+  "files": [
+    "relaxngui.js",
+    "relaxngui.css",
+    "AUTHORS"
+  ],
+  "dependencies": {
+    "jquery": "^3.3.1 || ^4.0.0",
+    "uidashjs": "^1.1.0"
+  }
+}
