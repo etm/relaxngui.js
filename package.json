@@ -1,5 +1,5 @@
 {
-  "name": "relaxngui",
+  "name": "relaxnguijs",
   "version": "1.0.0",
   "description": "Annotate RelaxNG schemas and use them as UI templates to generate/edit XML files in HTML forms.",
   "keywords": ["relaxng", "rng", "xml", "forms", "ui", "jquery", "cpee"],

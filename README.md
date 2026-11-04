@@ -10,6 +10,6 @@ jquery, then uidash_util.js, then relaxngui.js (plus uidash-icons.css and
 relaxngui.css).
 
 ```bash
-npm install relaxngui
+npm install relaxnguijs
 ```
 
