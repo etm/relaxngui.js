@@ -1,0 +1,31 @@
+<arguments>
+  <behavior>fork_running</behavior>
+  <purpose rngui-nonfunctional="true">_url</purpose>
+  <_url>
+    <_url_item>https://example.org/a.xml</_url_item>
+    <_url_item>https://example.org/b.xml</_url_item>
+  </_url>
+  <items>
+    <item>
+      <kind rngui-nonfunctional="true">number</kind>
+      <number>42</number>
+    </item>
+    <item>
+      <kind rngui-nonfunctional="true">text</kind>
+      <text>hello</text>
+    </item>
+    <item>
+      <kind rngui-nonfunctional="true">list</kind>
+      <list>
+        <entry>x</entry>
+        <entry>y</entry>
+      </list>
+    </item>
+    <item>
+      <kind rngui-nonfunctional="true">list</kind>
+      <list>
+        <entry>z</entry>
+      </list>
+    </item>
+  </items>
+</arguments>

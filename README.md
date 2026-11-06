@@ -12,4 +12,3 @@ relaxngui.css).
 ```bash
 npm install relaxnguijs
 ```
-
