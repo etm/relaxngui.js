@@ -13,6 +13,11 @@ relaxngui.css).
 npm install relaxnguijs
 ```
 
+![The form generated from the example schema](doc/example.png)
+
+The form above is generated from the schema in the [example](#example), filled
+with an existing document.
+
 ## Usage
 
 ```html
