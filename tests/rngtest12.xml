@@ -1,31 +1,25 @@
 <arguments>
   <behavior>fork_running</behavior>
-  <purpose rngui-nonfunctional="true">_url</purpose>
-  <_url>
-    <_url_item>https://example.org/a.xml</_url_item>
-    <_url_item>https://example.org/b.xml</_url_item>
-  </_url>
+  <purpose rngui-nonfunctional="true">selection</purpose>
+  <url>https://example.org/a.xml</url>
+  <url>https://example.org/b.xml</url>
   <items>
     <item>
-      <kind rngui-nonfunctional="true">number</kind>
+      <kind rngui-nonfunctional="true">0</kind>
       <number>42</number>
     </item>
     <item>
-      <kind rngui-nonfunctional="true">text</kind>
+      <kind rngui-nonfunctional="true">1</kind>
       <text>hello</text>
     </item>
     <item>
-      <kind rngui-nonfunctional="true">list</kind>
-      <list>
-        <entry>x</entry>
-        <entry>y</entry>
-      </list>
+      <kind rngui-nonfunctional="true">2</kind>
+      <entry>x</entry>
+      <entry>y</entry>
     </item>
     <item>
-      <kind rngui-nonfunctional="true">list</kind>
-      <list>
-        <entry>z</entry>
-      </list>
+      <kind rngui-nonfunctional="true">2</kind>
+      <entry>z</entry>
     </item>
   </items>
 </arguments>

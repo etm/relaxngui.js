@@ -6,16 +6,14 @@
     </choice>
   </element>
   <choice rngui:name="purpose" rngui:label="Purpose">
-    <element name="url" rngui:label="Model" rngui:choice_label="Process Execution">
+    <element name="url" rngui:label="Model" rngui:choice_label="Process Execution" rngui:choice_value="execution">
       <data type="string" rngui:label="Link to testset"/>
     </element>
-    <element name="_url" rngui:header="Models (first one is executed)" rngui:choice_label="Resource Selection">
-      <zeroOrMore rngui:label="Add Model">
-        <element name="_url_item" rngui:label="Model">
-          <data type="string" rngui:label="Link to testset"/>
-        </element>
-      </zeroOrMore>
-    </element>
+    <zeroOrMore rngui:label="Add Model" rngui:header="Models (first one is executed)" rngui:choice_label="Resource Selection" rngui:choice_value="selection">
+      <element name="url" rngui:label="Model">
+        <data type="string" rngui:label="Link to testset"/>
+      </element>
+    </zeroOrMore>
   </choice>
   <element name="items" rngui:header="Items">
     <zeroOrMore rngui:label="New Item">
@@ -27,13 +25,11 @@
           <element name="text" rngui:label="Text" rngui:choice_label="A Text">
             <data type="string" rngui:label="e.g. hello"/>
           </element>
-          <element name="list" rngui:header="List" rngui:choice_label="A List">
-            <zeroOrMore rngui:label="New Entry">
-              <element name="entry" rngui:label="Entry">
-                <data type="string" rngui:label="e.g. x"/>
-              </element>
-            </zeroOrMore>
-          </element>
+          <zeroOrMore rngui:label="New Entry" rngui:header="Entries" rngui:choice_label="A List">
+            <element name="entry" rngui:label="Entry">
+              <data type="string" rngui:label="e.g. x"/>
+            </element>
+          </zeroOrMore>
         </choice>
       </element>
     </zeroOrMore>
