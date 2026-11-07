@@ -11,7 +11,7 @@
     <data type="string" rngui:label="Relative path in to process (dir/process.xml)"/>
   </element>
   <element name="input" rngui:header="Input Arguments">
-    <zeroOrMore rngui:label="Create Argument" rngui:reorder="true">
+    <zeroOrMore rngui:label="Create Argument">
       <element name='item' rngui:label='Description'>
         <attribute name="label" rngui:label="Name">
           <data type="string"/>

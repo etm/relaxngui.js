@@ -103,7 +103,7 @@ visible field.
 | `<param name="minInclusive">`, `maxInclusive`, `pattern` | Restrict the input of the enclosing `<data>`. |
 | `<text/>` | Multi line text field (one `<li>` per line). |
 | `<choice>` of `<value>`s | Select box (or color picker, see `rngui:type`). |
-| `<choice>` of `<element>`s | Select box that shows only the selected alternative; only that alternative is saved. |
+| `<choice>` of `<element>`s and/or `<zeroOrMore>`s | Select box that shows only the selected alternative; only that alternative is saved (see [Choosing between alternatives](#choosing-between-alternatives)). |
 | `<zeroOrMore>` | A list with an add button; entries can be deleted and reordered. |
 | `<optional>` | The contained fields are marked optional; empty ones are not saved. |
 
@@ -120,11 +120,11 @@ not rendered.
 | | `element` with `anyName` | Placeholder of the name input. |
 | | `zeroOrMore` | Text of the add button. |
 | | `value` | Text shown in the select box (default: the value itself). |
-| | `choice` of elements | Label of the select box. |
+| | `choice` of alternatives | Label of the select box. |
 | `rngui:labellength` | `element`, `attribute` | Width of the label column in px (default: measured from the longest label). |
 | `rngui:labeltype` | `element` with `anyName` | `xml` allows full XML names (with `-` and uppercase) for the name input. |
-| `rngui:header` | `element` | Section header shown above the element's content. |
-| `rngui:fold` | `element` with `rngui:header` | Make the section foldable: `open`, `closed`, or `closed_conditional` (closed unless one of its fields has a value). |
+| `rngui:header` | `element`, `zeroOrMore` in a `choice` | Section header shown above the content. |
+| `rngui:fold` | anything with `rngui:header` | Make the section foldable: `open`, `closed`, or `closed_conditional` (closed unless one of its fields has a value). |
 | `rngui:hint` | `element`, `attribute` | Help text shown below the row. |
 | `rngui:default` | `element`, `attribute` | Default value. A value starting with `javascript:` is evaluated (see `ceval`). |
 | `rngui:visible` | `element`, `attribute` | `false` hides it; hidden things are not saved. |
@@ -134,8 +134,9 @@ not rendered.
 | `rngui:unique` | `anyName` | `true`: names must be unique within the list. |
 | `rngui:type` | `choice` | `color`: render the values (CSS colors) as color picker. |
 | `rngui:href`, `rngui:extract` | `choice` | Load the options from a URL (`javascript:` allowed); `rngui:extract` is evaluated with the response in `data` and must return `[[label, value], ...]`. |
-| `rngui:name` | `choice` of elements | Name of the (UI only) selector element. |
-| `rngui:choice_label` | `element` in a `choice` | Text of this alternative in the select box (default: element name). |
+| `rngui:name` | `choice` of alternatives | Name of the selector element (required). It is saved as `rngui-nonfunctional` element. |
+| `rngui:choice_label` | `element`, `zeroOrMore` in a `choice` | Text of this alternative in the select box (default: the element name; for `zeroOrMore` the name of its element). |
+| `rngui:choice_value` | `element`, `zeroOrMore` in a `choice` | Value saved in the selector element when this alternative is selected (default: its position, `0`, `1`, ...). |
 | `rngui:onchange` | `element`, `attribute` | JavaScript evaluated when the value changes (or, on an element containing a list, when entries are added/removed). Available: `self`, `current_element`, `current_element_main`. |
 | `rngui:oninit` | `element`, `attribute` | JavaScript evaluated after `content()` filled the form. |
 | `rngui:filehandler` | `data type="string"` | Adds a file upload button. The code is evaluated with `file` (the `File`) and `content` (a `FileReader`, `content.result` holds an `ArrayBuffer`); its result (an URL) becomes the value. |
@@ -231,3 +232,162 @@ and `save_json()`:
 
 More examples can be found in the `tests` directory (open the `.html` files
 through a web server).
+
+## Recipes
+
+Short snippets for common cases. All of them go inside the root `<element>` of
+a schema like the one above.
+
+### Lists
+
+A `<zeroOrMore>` creates an add button (`rngui:label`); entries can be
+deleted (✖) and moved by drag and drop (⬍). Wrap it in an element with a
+`rngui:header` to get a section:
+
+```xml
+<element name="items" rngui:header="Items">
+  <zeroOrMore rngui:label="Add Item">
+    <element name="item" rngui:label="Article">
+      <data type="string" rngui:label="Article number"/>
+    </element>
+  </zeroOrMore>
+</element>
+```
+
+### Free name/value pairs
+
+An element with `<anyName/>` instead of a name lets the user type the element
+name. `rngui:unique` prevents duplicate names, `rngui:labeltype="xml"` allows
+full XML names:
+
+```xml
+<zeroOrMore rngui:label="Add Property">
+  <element rngui:label="Name">
+    <anyName rngui:unique="true"/>
+    <data type="string" rngui:label="Value"/>
+  </element>
+</zeroOrMore>
+```
+
+### Optional fields
+
+Fields inside `<optional>` get a greyed out label until they have a value;
+empty ones are not saved:
+
+```xml
+<optional>
+  <element name="note" rngui:label="Note">
+    <text rngui:label="Anything else?"/>
+  </element>
+</optional>
+```
+
+### Foldable sections
+
+`rngui:fold` makes a section with `rngui:header` collapsible. With
+`closed_conditional` it starts closed, unless one of its fields has a value:
+
+```xml
+<element name="timing" rngui:header="Timing" rngui:fold="closed_conditional">
+  <element name="deadline" rngui:label="Deadline">
+    <data type="date" rngui:label="YYYY-MM-DD"/>
+  </element>
+</element>
+```
+
+### Choosing between alternatives
+
+A `<choice>` of `<element>`s and/or `<zeroOrMore>`s adds a select box (saved
+as element `rngui:name`), shows only the selected alternative and saves only
+that one. The alternatives are independent, they may even use the same
+element names:
+
+```xml
+<choice rngui:name="purpose" rngui:label="Purpose">
+  <element name="url" rngui:label="Model"
+           rngui:choice_label="Process Execution" rngui:choice_value="execution">
+    <data type="string" rngui:label="Link to testset"/>
+  </element>
+  <zeroOrMore rngui:label="Add Model" rngui:header="Models"
+              rngui:choice_label="Resource Selection" rngui:choice_value="selection">
+    <element name="url" rngui:label="Model">
+      <data type="string" rngui:label="Link to testset"/>
+    </element>
+  </zeroOrMore>
+</choice>
+```
+
+Selecting *Resource Selection* and adding two models saves:
+
+```xml
+<purpose rngui-nonfunctional="true">selection</purpose>
+<url>https://example.org/a.xml</url>
+<url>https://example.org/b.xml</url>
+```
+
+Consumers can ignore the `rngui-nonfunctional` selector; `content()` needs it
+to restore the selection. See `tests/rngtest12.rng`, which also has a choice
+inside a list.
+
+### Showing and hiding fields
+
+A UI only switch (`rngui-nonfunctional`) whose `rngui:onchange` shows other
+elements, which start hidden (`rngui:visible="false"`), for one value and hides
+them for all others. `rngui:oninit` restores the visibility when existing
+content is loaded:
+
+```xml
+<element name="handling" rngui:label="Handling"
+         rngui:onchange="self.relaxngui_switch_visibility(current_element,'collect','> order > collect')"
+         rngui:oninit="self.relaxngui_visible('collect','> order > collect')">
+  <attribute name="rngui-nonfunctional"/>
+  <choice>
+    <value rngui:label="By Single Worker">single</value>
+    <value rngui:label="By Multiple Workers">collect</value>
+  </choice>
+</element>
+<optional>
+  <element name="collect" rngui:label="Minimum Workers" rngui:visible="false">
+    <data type="nonNegativeInteger" rngui:label="0 means all"/>
+  </element>
+</optional>
+```
+
+For anything more involved than a single toggle, prefer
+[choosing between alternatives](#choosing-between-alternatives).
+
+### Select boxes from a URL
+
+`rngui:href` loads the options, `rngui:extract` turns the response (`data`)
+into `[[label, value], ...]`:
+
+```xml
+<element name="user" rngui:label="User">
+  <choice rngui:href="/users.json"
+          rngui:extract="data.map((u) => [u.name, u.id])"/>
+</element>
+```
+
+### Color picker
+
+```xml
+<element name="color" rngui:label="Color">
+  <choice rngui:type="color">
+    <value>#99c1f1</value>
+    <value>#8ff0a4</value>
+    <value>#f66151</value>
+  </choice>
+</element>
+```
+
+### File upload
+
+`rngui:filehandler` adds an upload button. Its code gets the `File` as `file`
+and must synchronously return the URL that becomes the value (the field
+expects an `https://` URL and is marked invalid otherwise):
+
+```xml
+<element name="document" rngui:label="Document">
+  <data type="string" rngui:label="URL" rngui:filehandler="upload(file)"/>
+</element>
+```
