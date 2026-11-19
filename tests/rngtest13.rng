@@ -1,0 +1,15 @@
+<element rngui:version="1.2" rngui:header="Action Buttons" name="actions" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <element name="title" rngui:label="Title" rngui:action_button_label="Upper" rngui:action_button_handler="let i = entry.find('input'); i.val(i.val().toUpperCase())">
+    <data type="string" rngui:label="some text"/>
+  </element>
+  <zeroOrMore rngui:label="New Item" rngui:header="Items">
+    <element name="item" rngui:action_button_label="Show" rngui:action_button_handler="show_action(entry)">
+      <element name="name" rngui:label="Name">
+        <data type="string" rngui:label="e.g. hello"/>
+      </element>
+      <element name="note" rngui:label="Note" rngui:action_button_label="Clear" rngui:action_button_handler="entry.find('input').val('')">
+        <data type="string" rngui:label="e.g. world"/>
+      </element>
+    </element>
+  </zeroOrMore>
+</element>

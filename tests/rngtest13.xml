@@ -1,0 +1,11 @@
+<actions>
+  <title>action buttons</title>
+  <item>
+    <name>first</name>
+    <note>a note</note>
+  </item>
+  <item>
+    <name>second</name>
+    <note>another note</note>
+  </item>
+</actions>

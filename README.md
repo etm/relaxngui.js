@@ -83,6 +83,22 @@ full XML names:
 </zeroOrMore>
 ```
 
+`rngui:pattern` on `<anyName>` replaces the built-in name pattern with your
+own. Input that does not match is rejected while typing, so the pattern has to
+accept every prefix of a valid name (e.g. `^R\d*$`, not `^R\d+$`):
+
+```xml
+<anyName rngui:unique="true" rngui:pattern="^R\d*$"/>
+```
+
+`rngui:default` on `<anyName>` fills in the name of every newly added entry
+(loaded content keeps its names). A `javascript:` prefix evaluates the rest,
+e.g. to generate the next free id; `rngui:readonly="true"` prevents editing it:
+
+```xml
+<anyName rngui:unique="true" rngui:default="javascript:next_id()" rngui:readonly="true"/>
+```
+
 ### Optional fields
 
 Fields inside `<optional>` get a greyed out label until they have a value;

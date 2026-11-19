@@ -142,7 +142,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     }
 
     container.find('> .relaxngui_control').before(template);
-    if (first == false) {
+    if (first == false) { // only for new entries, loaded content sets its own names
+      template.find('input[data-relaxngui-name-default]').not(template.find('.relaxngui_template input')).each(function(){
+        let defaul = $(this).attr('data-relaxngui-name-default');
+        if (defaul.match(/^javascript:/)) {
+          defaul = defaul.replace(/^javascript:/,'');
+          defaul = ceval ? ceval(defaul) : eval(defaul);
+        }
+        $(this).val(defaul);
+      });
       if (container.is("[data-relaxngui-onchange]")) {
         eval(container.attr('data-relaxngui-onchange'));
         container.trigger('relaxngui_change');
@@ -159,6 +167,14 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     }
     it.remove();
     par.trigger('relaxngui_remove');
+  }; //}}}
+
+  var action_button = function(tag){ //{{{
+    if (!tag.hasAttributeNS('http://rngui.org','action_button_label') || !tag.hasAttributeNS('http://rngui.org','action_button_handler')) { return $(); }
+    let act = $('<button type="button" data-type="act"></button>');
+        act.text(tag.getAttributeNS('http://rngui.org','action_button_label'));
+        act.attr('data-relaxngui-action-handler',tag.getAttributeNS('http://rngui.org','action_button_handler'));
+    return act;
   }; //}}}
 
   var recshow_header = function(tag,ret,level){ //{{{
@@ -264,6 +280,15 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       if (v.hasAttributeNS('http://rngui.org','unique') && v.getAttributeNS('http://rngui.org','unique') == 'true') {
         first.unique = true;
       }
+      if (v.hasAttributeNS('http://rngui.org','pattern')) {
+        first.pattern = v.getAttributeNS('http://rngui.org','pattern');
+      }
+      if (v.hasAttributeNS('http://rngui.org','default')) {
+        first.namedefault = v.getAttributeNS('http://rngui.org','default');
+      }
+      if (v.hasAttributeNS('http://rngui.org','readonly') && v.getAttributeNS('http://rngui.org','readonly') == 'true') {
+        first.namereadonly = true;
+      }
     });
     $.each($(tag).children('data[type=string]'), function(k,v) { second = labextract('string',v); });
     $.each($(tag).children('data[type=integer]'), function(k,v) { second = labextract('integer',v); });
@@ -325,16 +350,22 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       // a tag without information is ignored
       node.addClass('relaxngui_hidden');
     } else if (first.label) {
-      if (first.labeltype == 'xml') {
+      if (first.pattern) {
+        node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='" + first.pattern + "' placeholder='" + first.label + "'" + (first.unique ? " data-relaxngui-unique='true'" : '') + "></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
+      } else if (first.labeltype == 'xml') {
         node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-zA-Z_][a-zA-Z0-9_\\-]*$' placeholder='" + first.label + "'" + (first.unique ? " data-relaxngui-unique='true'" : '') + "></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
       } else {
         node.append($("<input data-relaxngui-visible='true' data-relaxngui-template='" + template + "' data-relaxngui-parent='" + path + "' data-relaxngui-path='" + path + " > *[data-name]' class='relaxngui_cell' type='text' pattern='^[a-z_][a-zA-Z0-9_]*$'       placeholder='" + first.label + "'" + (first.unique ? " data-relaxngui-unique='true'" : '') + "></input><span class='relaxngui_cell'><i class='uidash-icon-value'></i></span>"));
       }
+      let nameinput = node.children('input').last();
+      if (first.namedefault) { nameinput.attr('data-relaxngui-name-default',first.namedefault); } // evaluated in addelements, i.e. for every new entry
+      if (first.namereadonly) { nameinput.attr('readonly','readonly').attr('tabindex','-1'); }
     }
 
     var tpath = (first.name ? (tag.localName == 'element' ? path + ' > ' + first.name : path + '[' + first.name + ']') : path + ' > *' );
     if (first.label) {
       recshow_data(node,first.default,tpath,datalist,second,template,path,optional,labid);
+      if (!template) { node.append(action_button(tag)); }
       ret.append(node);
       retcount += 1;
     } else {
@@ -390,6 +421,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
         if (template) {
           var yyy = $('<div data-relaxngui-level="' + attr.level + '" class="relaxngui_table ' + attr.mode + '" data-relaxngui-template="true" data-relaxngui-parent="' + path + '" data-relaxngui-path="' + (path == '' ? ' > '  + (typeof elements.attr('name') === 'undefined' ? '*' : elements.attr('name')) : path + ' > ' + (typeof $(tag).attr('name') === 'undefined' ? '*' : $(tag).attr('name'))) + '[data-main]">');
           xxx = $('<div class="relaxngui_template"><div data-type="del">✖</div><div data-type="mov"><div>⬍</div></div></div>');
+          xxx.append(action_button(tag));
           xxx.append(yyy);
           ret.append(xxx);
           xxx = yyy;
@@ -1005,6 +1037,11 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
   });
 
   target.unbind('click.file.button');
+  target.on('click.relaxngui.action','[data-type=act]',function(ev){
+    let current_element = $(ev.currentTarget);
+    let entry = current_element.parent();
+    eval(current_element.attr('data-relaxngui-action-handler'));
+  });
   target.on('click.file.button','button.file',function(ev){
     let id = ev.currentTarget.id.replace(/_button/,'');
     document.getElementById(id + '_file').click();
