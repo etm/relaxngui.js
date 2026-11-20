@@ -39,7 +39,7 @@
   padding-top: 0;
 }
 
-.relaxngui_table { min-width: fit-content }
+.relaxngui_table { min-width: 0 }
 .relaxngui_hidden { display: none; }
 .relaxngui_table .relaxngui_table { }
 
@@ -257,7 +257,7 @@ select.relaxngui_cell:nth-child(n+3) {
   border: none;
 }
 select.relaxngui_cell:nth-child(n+3), button.relaxngui_cell:nth-child(n+3), textarea.relaxngui_cell:nth-child(n+3), input.relaxngui_cell:nth-child(n+3), [contenteditable].relaxngui_cell:nth-child(n+3), ol[contenteditable].relaxngui_cell:nth-child(n+3) {
-  padding:0;
+  padding: 0.15em 0.3em;
   margin: 0 0.2em;
   border: 0 none;
   background: none;
@@ -293,9 +293,31 @@ input.relaxngui_cell:nth-child(n+3)[type=checkbox] {
 }
 
 ol[contenteditable] {
-  overflow-x: initial!important;
-  padding: 0!important;
-  padding-left: 1.6em!important;
+  overflow-x: auto!important;
+  min-width: 0;
+  padding: 0 0 0.35em 2.6em!important;
+}
+ol[contenteditable]::-webkit-scrollbar {
+  width: 0.7em;
+  height: 0.7em;
+  background: transparent;
+}
+ol[contenteditable]::-webkit-scrollbar-track,
+ol[contenteditable]::-webkit-scrollbar-track:hover,
+ol[contenteditable]::-webkit-scrollbar-corner {
+  background: transparent;
+}
+ol[contenteditable]::-webkit-scrollbar-thumb,
+ol[contenteditable]::-webkit-scrollbar-thumb:hover {
+  border-radius: 0.7em;
+  border: 0.2em solid transparent;
+  background: var(--relaxngui-empty-cell);
+  background-clip: content-box;
+}
+@supports not selector(::-webkit-scrollbar) {
+  ol[contenteditable] {
+    scrollbar-color: var(--relaxngui-empty-cell) transparent;
+  }
 }
 ol[contenteditable] > li::marker {
   font-size: 0.8em;
