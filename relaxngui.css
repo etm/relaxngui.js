@@ -167,8 +167,8 @@
 .relaxngui_table.even { background-color: var(--relaxngui-stripe-dark); }
 .relaxngui_table.odd  { background-color: var(--relaxngui-stripe-light); }
 
-.relaxngui_table.odd > .relaxngui_table.even:last-child { border-bottom: 0.5em solid #fff; }
-.relaxngui_table.even > .relaxngui_table.odd:last-child { border-bottom: 0.5em solid #e9e9e9; }
+.relaxngui_table.odd > .relaxngui_table.even:last-child { border-bottom: 0.5em solid var(--relaxngui-stripe-light); }
+.relaxngui_table.even > .relaxngui_table.odd:last-child { border-bottom: 0.5em solid var(--relaxngui-stripe-dark); }
 
 .relaxngui_row {
   width: 100%;
@@ -264,7 +264,7 @@ select.relaxngui_cell:nth-child(n+3), button.relaxngui_cell:nth-child(n+3), text
   margin-left: 1ex;
 }
 input.relaxngui_cell:nth-child(n+3):invalid {
-  color: var(--relaxngui-stripe-invalid);
+  color: var(--relaxngui-invalid);
 }
 input.relaxngui_cell:nth-child(n+3)[type=checkbox] {
   flex: 0 0 auto;
@@ -361,7 +361,7 @@ ol[contenteditable] > li::marker {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  text-shadow: -0.75px -0.75px 0.5px #000, 0.75px -0.75px 0.5px #000, -0.75px 0.75px 0.5px #000, 0.75px 0.75px 0.5px #000;
+  text-shadow: -0.75px -0.75px 0.5px var(--relaxngui-color-symbol), 0.75px -0.75px 0.5px var(--relaxngui-color-symbol), -0.75px 0.75px 0.5px var(--relaxngui-color-symbol), 0.75px 0.75px 0.5px var(--relaxngui-color-symbol);
 }
 
 .relaxngui_color_container .round label:before {
