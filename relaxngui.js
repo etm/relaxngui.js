@@ -119,7 +119,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     });
 
     template.find('[data-relaxngui-template]').each(function(j,t){
-      $(t).attr('data-relaxngui-template',false);
+      $(t).attr('data-relaxngui-template','false');
     });
     template.find('.relaxngui_template [data-relaxngui-template]').each(function(j,t){
       $(t).attr('data-relaxngui-template',true);
@@ -330,8 +330,8 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       });
     });
 
-    ret.attr('data-relaxngui-visible',first.visible);
-    ret.attr('data-relaxngui-functional',first.functional);
+    ret.attr('data-relaxngui-visible',String(first.visible));
+    ret.attr('data-relaxngui-functional',String(first.functional));
     if (first.onchange) {
       ret.attr('data-relaxngui-onchange',first.onchange);
     }
@@ -370,7 +370,7 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       retcount += 1;
     } else {
       if (tag.localName != 'element') { // its an attribute, simulate its empty-ness
-        node.attr('data-relaxngui-template',template);
+        node.attr('data-relaxngui-template',String(template));
         node.attr('data-relaxngui-parent',path);
         node.attr('data-relaxngui-path',tpath);
         ret.append(node);
