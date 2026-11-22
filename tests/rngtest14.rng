@@ -1,0 +1,41 @@
+<element name="order" rngui:version="1.2" rngui:header="Order"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+         xmlns="http://relaxng.org/ns/structure/1.0" xmlns:rngui="http://rngui.org">
+  <attribute name="id" rngui:label="Order ID">
+    <data type="string" rngui:label="e.g. A-42"/>
+  </attribute>
+  <element name="customer" rngui:label="Customer">
+    <data type="string" rngui:label="Full name"/>
+  </element>
+  <element name="priority" rngui:label="Priority" rngui:hint="High priority orders are shipped first.">
+    <choice>
+      <value rngui:label="Normal">normal</value>
+      <value rngui:label="High">high</value>
+    </choice>
+  </element>
+  <element name="quantity" rngui:label="Quantity">
+    <data type="positiveInteger" rngui:label="Number of items">
+      <param name="maxInclusive">100</param>
+    </data>
+  </element>
+  <optional>
+    <element name="note" rngui:label="Note">
+      <text rngui:label="Anything else?" rngui:wrap="true"/>
+    </element>
+  </optional>
+  <element name="items" rngui:header="Items" rngui:fold="open">
+    <zeroOrMore rngui:label="Add Item">
+      <element name="item" rngui:label="Article">
+        <data type="string" rngui:label="Article number"/>
+      </element>
+    </zeroOrMore>
+  </element>
+  <element name="extras" rngui:header="Extras" rngui:fold="closed">
+    <zeroOrMore rngui:label="Add Extra">
+      <element rngui:label="Name">
+        <anyName rngui:unique="true"/>
+        <data type="string" rngui:label="Value"/>
+      </element>
+    </zeroOrMore>
+  </element>
+</element>

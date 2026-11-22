@@ -304,6 +304,8 @@ and `save_json()`:
 }
 ```
 
+`content_json()` reads this format back (see `tests/rngtest14.html`).
+
 More examples can be found in the `tests` directory (open the `.html` files
 through a web server).
 
@@ -328,6 +330,8 @@ new RelaxNGui(rng, target, ceval, ignore = false, upload = true)
 | Method | Returns |
 |--------|---------|
 | `content(xml)` | Fills the form from an XML document (`XMLDocument` or string). Repeated elements are created as needed, then `rngui:oninit` handlers run and a checkpoint is set. |
+| `content_object(obj)` | Fills the form from a JavaScript object in the format of `save_object()`. The root name and the namespaces come from the schema. Keys that are no XML names are skipped with a console warning. |
+| `content_json(text)` | `content_object()` from a JSON string. |
 | `save()` | The form content as `XMLDocument`. Invisible parts (`rngui:visible="false"`, or hidden by a choice) and empty optional elements are left out. |
 | `save_text()` | The same, as pretty printed XML string. |
 | `save_object()` | The form content as JavaScript object: attributes become `@name` keys, mixed text becomes `#text`, repeated elements become arrays (always arrays when the schema says they may repeat). |

@@ -1,0 +1,8 @@
+{
+  "@id": "A-42",
+  "customer": "Jane Doe",
+  "priority": "high",
+  "quantity": "3",
+  "items": { "item": [ "4711", "0815" ] },
+  "extras": { "giftwrap": "yes", "card": "Happy Birthday" }
+}

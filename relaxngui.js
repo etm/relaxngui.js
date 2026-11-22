@@ -525,6 +525,38 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
     return ret.children().length > 0 ? ret.children() : undefined;
   }; //}}}
 
+  var rng_elements = function(ele,repeated=false) { //{{{
+    // child elements of a schema element, through wrappers: [[element,repeated],...]
+    let ret = [];
+    $(ele).children().each((_,c) => {
+      if (c.localName == 'element') {
+        ret.push([c,repeated]);
+      } else if (['zeroOrMore','oneOrMore','optional','group','interleave','choice'].includes(c.localName)) {
+        ret = ret.concat(rng_elements(c,repeated || c.localName == 'zeroOrMore' || c.localName == 'oneOrMore'));
+      }
+    });
+    return ret;
+  }; //}}}
+  var rng_find = function(path) { //{{{
+    // schema element for a path, e.g. ' > groups > group'
+    let names = path.split(' > ').filter((n) => n != '');
+    let ele = rng.documentElement;
+    if (ele.getAttribute('name') != names[0]) { return undefined; }
+    for (let n of names.slice(1)) {
+      let found = rng_elements(ele).find(([e,_]) => n == '*' ? !e.hasAttribute('name') : e.getAttribute('name') == n);
+      if (!found) { return undefined; }
+      ele = found[0];
+    }
+    return ele;
+  }; //}}}
+  var rng_ns = function(ele) { //{{{
+    // the namespace of a schema element: its own ns attribute, or the one of the closest ancestor in the schema
+    for (let e = ele; e && e.nodeType == 1; e = e.parentNode) {
+      if (e.hasAttribute('ns')) { return e.getAttribute('ns'); }
+    }
+    return undefined;
+  }; //}}}
+
   this.save_raw = function() { //{{{
     var xml;
     var curr;
@@ -614,28 +646,6 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       var node = { name: name, attrs: {}, children: [], text: undefined, parent: parent, multi: multi };
       if (parent) { parent.children.push(node); }
       return node;
-    };
-    var rng_elements = function(ele,repeated=false) { // child elements of a schema element, through wrappers: [[element,repeated],...]
-      let ret = [];
-      $(ele).children().each((_,c) => {
-        if (c.localName == 'element') {
-          ret.push([c,repeated]);
-        } else if (['zeroOrMore','oneOrMore','optional','group','interleave','choice'].includes(c.localName)) {
-          ret = ret.concat(rng_elements(c,repeated || c.localName == 'zeroOrMore' || c.localName == 'oneOrMore'));
-        }
-      });
-      return ret;
-    };
-    var rng_find = function(path) { // schema element for a path, e.g. ' > groups > group'
-      let names = path.split(' > ').filter((n) => n != '');
-      let ele = rng.documentElement;
-      if (ele.getAttribute('name') != names[0]) { return undefined; }
-      for (let n of names.slice(1)) {
-        let found = rng_elements(ele).find(([e,_]) => n == '*' ? !e.hasAttribute('name') : e.getAttribute('name') == n);
-        if (!found) { return undefined; }
-        ele = found[0];
-      }
-      return ele;
     };
     var multi_rng = function(ele) { // children can share a name: repeated (zeroOrMore, oneOrMore) elements without unique names
       if (!ele) { return false; }
@@ -856,6 +866,55 @@ var RelaxNGui = function(rng,target,ceval,ignore=false,upload=true) {
       });
     }
     suspend_events = false;
+  }; //}}}
+  var object_to_xml = function(obj) { //{{{
+    // the inverse of save_object: '@name' keys become attributes, '#text' the
+    // text, arrays repeated elements. The root name is not in the object, it
+    // comes from the schema, as do the namespaces
+    let doc = document.implementation.createDocument(null,null,null);
+    let build = (name,value,path,pns) => {
+      let sele = rng_find(path);
+      let ns = sele ? rng_ns(sele) : pns;
+      let ele;
+      try {
+        ele = ns ? doc.createElementNS(ns,name) : doc.createElement(name);
+      } catch(e) {
+        console.warn('RelaxNGui: "' + name + '" is no XML name, skipped.');
+        return undefined;
+      }
+      if (value === null || value === undefined) { return ele; }
+      if (typeof value != 'object') {
+        ele.textContent = String(value);
+        return ele;
+      }
+      Object.keys(value).forEach((k) => {
+        let v = value[k];
+        if (k == '#text') {
+          ele.appendChild(doc.createTextNode(String(v)));
+        } else if (k.startsWith('@')) {
+          try {
+            ele.setAttribute(k.slice(1),String(v));
+          } catch(e) {
+            console.warn('RelaxNGui: "' + k.slice(1) + '" is no XML name, skipped.');
+          }
+        } else {
+          (Array.isArray(v) ? v : [v]).forEach((item) => {
+            let c = build(k,item,path + ' > ' + k,ns);
+            if (c) { ele.appendChild(c); }
+          });
+        }
+      });
+      return ele;
+    };
+    let name = rng.documentElement.getAttribute('name');
+    doc.appendChild(build(name,obj,' > ' + name,undefined));
+    return doc;
+  }; //}}}
+  this.content_object = function(obj) { //{{{
+    self.content(object_to_xml(obj));
+  }; //}}}
+  this.content_json = function(text) { //{{{
+    self.content_object(JSON.parse(text));
   }; //}}}
 
   (function($) { //{{{
